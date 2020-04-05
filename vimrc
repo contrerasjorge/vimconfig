@@ -1,5 +1,6 @@
 call plug#begin('~/.vim/plugged')
 
+Plug 'christoomey/vim-tmux-navigator'
 Plug 'rust-lang/rust.vim'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'prettier/vim-prettier', {
@@ -19,6 +20,8 @@ Plug 'frazrepo/vim-rainbow'
 Plug 'mattn/emmet-vim'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'itchyny/lightline.vim'
+Plug 'jiangmiao/auto-pairs'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 call plug#end()
 
@@ -33,17 +36,16 @@ let g:lightline = {
 
 let g:rainbow_active = 1
 
-" Comments in Vimscript start with a `"`.
 
-" If you open this file in Vim, it'll be syntax highlighted for you.
+" Check if we can load the FZF vim plugin
+if filereadable("/usr/local/opt/fzf/bin/fzf")
+  set rtp+=/usr/local/opt/fzf
+end
 
-" Vim is based on Vi. Setting `nocompatible` switches from the default
-" Vi-compatibility mode and enables useful Vim functionality. This
-" configuration option turns out not to be necessary for the file named
-" '~/.vimrc', because Vim automatically enters nocompatible mode if that file
-" is present. But we're including it here just in case this config file is
-" loaded some other way (e.g. saved as `foo`, and then Vim started with
-" `vim -u foo`).
+if filereadable("/home/mrnugget/.fzf/bin/fzf")
+  set rtp+=/home/mrnugget/.fzf
+end
+
 set nocompatible
 
 " Turn on syntax highlighting.
@@ -68,21 +70,10 @@ set laststatus=2
 " This configuration makes backspace behave more reasonably, in that you can
 " backspace over anything.
 set backspace=indent,eol,start
-
-" By default, Vim doesn't let you hide a buffer (i.e. have a buffer that isn't
-" shown in any window) that has unsaved changes. This is to prevent you from "
-" forgetting about unsaved changes and then quitting e.g. via `:qa!`. We find
-" hidden buffers helpful enough to disable this protection. See `:help hidden`
-" for more information on this.
 set hidden
 
-" This setting makes search case-insensitive when all characters in the string
-" being searched are lowercase. However, the search becomes case-sensitive if
-" it contains any capital letters. This makes searching more convenient.
 set ignorecase
 set smartcase
-
-" Enable searching as you type, rather than waiting till you press enter.
 set incsearch
 
 " Unbind some useless/annoying default key bindings.
@@ -94,3 +85,20 @@ set noerrorbells visualbell t_vb=
 " Enable mouse support. You should avoid relying on this too much, but it can
 " sometimes be convenient.
 set mouse+=a
+
+" Indenting
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+set shiftround
+set expandtab
+
+
+" Python
+autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
+
+" Go
+let g:go_fmt_command = "goimports"
+
+" Rust
+let g:rustfmt_autosave = 1
