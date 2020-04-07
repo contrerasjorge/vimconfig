@@ -23,8 +23,24 @@ Plug 'terryma/vim-multiple-cursors'
 Plug 'itchyny/lightline.vim'
 Plug 'jiangmiao/auto-pairs'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'preservim/nerdcommenter'
+Plug 'HerringtonDarkholme/yats.vim' " TS Syntax"
 
 call plug#end()
+
+" coc config
+ let g:coc_global_extensions = [
+   \ 'coc-snippets',
+     \ 'coc-pairs',
+       \ 'coc-tsserver',
+         \ 'coc-eslint', 
+           \ 'coc-prettier', 
+             \ 'coc-json', 
+               \ ]
+" from readme
+" if hidden is not set, TextEdit might fail.
+set hidden
+set updatetime=300"
 
 syntax enable
 filetype on
@@ -51,7 +67,7 @@ set nocompatible
 
 " Turn on syntax highlighting.
 syntax on
-colorscheme dracula
+"colorscheme dracula
 " packadd! dracula
 " Disable the default Vim startup message.
 set shortmess+=I
@@ -84,8 +100,6 @@ nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
 " Disable audible bell because it's annoying.
 set noerrorbells visualbell t_vb=
 
-" Enable mouse support. You should avoid relying on this too much, but it can
-" sometimes be convenient.
 set mouse+=a
 
 " Indenting
@@ -99,8 +113,45 @@ set expandtab
 " Python
 autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
 
+au filetype go inoremap <buffer> . .<C-x><C-o>
+
 " Go
+nmap <leader>gos :e /usr/local/go/src/<CR>
+"let g:go_auto_type_info = 1
 let g:go_fmt_command = "goimports"
+let g:go_highlight_structs = 0
+let g:go_rename_command = "gopls"
+let g:go_echo_command_info = 1
+
+let g:go_def_mode='gopls'
+let g:go_info_mode='gopls'
+let g:go_test_show_name = 1
+
+let g:go_term_mode = "split"
+let g:go_term_height = 10
+" let g:go_term_enabled = 1>>
+
+augroup ft_golang
+  au!
+  au BufEnter,BufNewFile,BufRead *.go setlocal noexpandtab shiftwidth=4 tabstop=4 softtabstop=4 nolist
+  au BufEnter,BufNewFile,BufRead *.go setlocal completeopt-=preview
+  " Enable automatic continuation of comment inserting
+  au BufEnter,BufNewFile,BufRead *.go setlocal formatoptions+=ro
+  au BufEnter,BufNewFile,BufRead *.tmpl setlocal filetype=html
+
+  au Filetype go nmap c-]>< Plug><(go-def)
+  au Filetype go nmap leader><goi Plug><(go-info)
+  au Filetype go nmap <leader>god :GoDeclsDir<CR>
+  au Filetype go nmap leader><gou Plug><(go-run)
+  au Filetype go nmap leader><gor <Plug>(go-rename)
+  au Filetype go nmap leader><got :GoTest!CR><
+  au Filetype go nmap <leader>rt :GoTestFunc!CR><
+  au Filetype go nmap <leader>gom :GoImportsCR><
+  au Filetype go nmap <leader>gie <Plug>(go-iferr)
+                            
+  autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
+  autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
+  autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')>)>)>)>>>>>>>>>>>>>>>>
 
 " Rust
 let g:rustfmt_autosave = 1
@@ -109,7 +160,7 @@ let g:rustfmt_autosave = 1
 let g:ale_linters = {'go': ['go build', 'gofmt'], 'rust': ['cargo', 'rls']}
 
 " prettier
-let g:prettier#autoformat = 0
+let g:prettier#autoformat = 1
 autocmd BufWritePre *.js,*.jsx,*.ts,*.tsx PrettierAsync
 
 " TextEdit might fail if hidden is not set.
@@ -119,8 +170,6 @@ set hidden
 set nobackup
 set nowritebackup
 
-" Give more space for displaying messages.
-set cmdheight=2
 
 " Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
 " delays and poor user experience.
@@ -231,7 +280,7 @@ command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organize
 " Add (Neo)Vim's native statusline support.
 " NOTE: Please see `:h coc-status` for integrations with external plugins that
 " provide custom statusline: lightline.vim, vim-airline.
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+"set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 
 "Mappings using CoCList:
