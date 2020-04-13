@@ -1,5 +1,6 @@
 call plug#begin('~/.vim/plugged')
 
+Plug 'ap/vim-css-color'
 Plug 'dracula/vim', { 'as': 'dracula'  }
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'rust-lang/rust.vim'
@@ -24,6 +25,7 @@ Plug 'jiangmiao/auto-pairs'
 "Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
 Plug 'HerringtonDarkholme/yats.vim' " TS Syntax"
+Plug 'pangloss/vim-javascript'
 
 call plug#end()
 
@@ -159,7 +161,19 @@ augroup ft_rust
 augroup END
 
 " Ale
-let g:ale_linters = {'go': ['go build', 'gofmt'], 'rust': ['cargo', 'rls']}
+let g:ale_linters = {'go': ['go build', 'gofmt'], 'rust': ['cargo', 'rls'], 
+      \ 'python': ['flake8', 'pylint'],
+      \ 'javascript': ['eslint'],
+      \ }
+
+let g:ale_fixers = {
+  \    'javascript': ['eslint'],
+  \    'typescript': ['prettier', 'tslint'],
+  \    'vue': ['eslint'],
+  \    'scss': ['prettier'],
+  \    'html': ['prettier'],
+  \    'reason': ['refmt']
+\}
 
 " prettier
 let g:prettier#autoformat = 1
