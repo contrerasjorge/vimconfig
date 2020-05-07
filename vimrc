@@ -26,19 +26,30 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
 Plug 'HerringtonDarkholme/yats.vim' " TS Syntax"
 Plug 'pangloss/vim-javascript'
+Plug 'elmcast/elm-vim'
 
 call plug#end()
 
+autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+
+colorscheme default
+set background=light
+" Give the active window a blue background and white foreground
+hi StatusLine ctermfg=15 ctermbg=32 cterm=bold
+hi SignColumn ctermfg=255 ctermbg=15
+" Highlight search
+hi Search     ctermbg=yellow
+
 "coc config
-let g:coc_global_extensions = [
-\ 'coc-snippets',
-\ 'coc-pairs',
-\ 'coc-tsserver',
+"let g:coc_global_extensions = [
+"\ 'coc-snippets',
+"\ 'coc-pairs',
+"\ 'coc-tsserver',
 "\ 'coc-eslint', 
-\ 'coc-prettier', 
-\ 'coc-json', 
-               \ ]
-"" from readme
+"\ 'coc-prettier', 
+"\ 'coc-json', 
+               "\ ]
+
 " if hidden is not set, TextEdit might fail.
 set hidden
 set updatetime=300"
@@ -81,15 +92,12 @@ set laststatus=2
 " by default, you can't backspace before the insertion point set with 'i'.
 " This configuration makes backspace behave more reasonably, in that you can
 " backspace over anything.
-set backspace=indent,eol,start
+set backspace=2
 set hidden
 
 set ignorecase
 set smartcase
 set incsearch
-
-" Unbind some useless/annoying default key bindings.
-nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
 
 " Disable audible bell because it's annoying.
 set noerrorbells visualbell t_vb=
@@ -103,6 +111,12 @@ set softtabstop=2
 set shiftround
 set expandtab
 
+" FZF mappings and custom functions
+nnoremap <silent> <leader>fc :BCommits<CR>
+nnoremap <silent> <leader>fb :Buffers<CR>
+nnoremap <silent> <leader>fr :History<CR>
+nnoremap <silent> <leader>fi :FZF<CR>
+nnoremap <silent> <C-p> :FZF<CR>
 
 " Python
 autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
@@ -171,22 +185,15 @@ augroup ft_rust
 augroup END
 
 " Ale
-let g:ale_linters = {'go': ['go build', 'gofmt'], 'rust': ['cargo', 'rls'], 
-      \ 'python': ['flake8', 'pylint'],
-      \ 'javascript': ['eslint'],
-      \ }
-
-let g:ale_fixers = {
-  \    'javascript': ['eslint', 'prettier'],
-  \    'typescript': ['prettier', 'tslint'],
-  \    'vue': ['eslint'],
-  \    'scss': ['prettier'],
-  \    'html': ['prettier'],
-  \    'reason': ['refmt']
-\}
+let g:ale_linters = {'go': ['go build', 'gofmt'], 'rust': ['cargo', 'rls']}
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_ocaml_ocamlformat_options = '--enable-outside-detected-project'
+let g:ale_fixers = {'ocaml': ['ocp-indent']}
+nmap <silent> <leader>aj :ALENext<cr>
+nmap <silent> <leader>ak :ALEPrevious<cr>
 
 " prettier
-let g:prettier#autoformat = 1
+let g:prettier#autoformat = 0
 autocmd BufWritePre *.js,*.jsx,*.ts,*.tsx PrettierAsync
 
 " Typescript
@@ -196,8 +203,11 @@ augroup ft_typescript
   autocmd BufNewFile,BufRead *.tsx,*.jsx set filetype=typescript
 
   au Filetype typescript nmap <c-]> <Plug>(ale_go_to_definition)
-  au Filetype typescript setlocal shiftwidth=4 softtabstop=4 expandtab
+  au Filetype typescript setlocal shiftwidth=2 softtabstop=2 expandtab
 augroup END
+
+" Elm
+let g:polyglot_disabled = ['elm']
 
 " TextEdit might fail if hidden is not set.
 set hidden
