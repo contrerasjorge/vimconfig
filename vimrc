@@ -18,7 +18,6 @@ Plug 'tpope/vim-eunuch'
 Plug 'janko-m/vim-test'
 Plug 'w0rp/ale'
 Plug 'bronson/vim-visual-star-search'
-Plug 'luochen1990/rainbow'
 Plug 'mattn/emmet-vim'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'jiangmiao/auto-pairs'
@@ -40,19 +39,9 @@ hi SignColumn ctermfg=255 ctermbg=15
 " Highlight search
 hi Search     ctermbg=yellow
 
-"coc config
-"let g:coc_global_extensions = [
-"\ 'coc-snippets',
-"\ 'coc-pairs',
-"\ 'coc-tsserver',
-"\ 'coc-eslint', 
-"\ 'coc-prettier', 
-"\ 'coc-json', 
-               "\ ]
-
 " if hidden is not set, TextEdit might fail.
 set hidden
-set updatetime=300"
+set updatetime=300
 
 syntax enable
 filetype on
@@ -61,15 +50,6 @@ filetype indent on
 
 let g:rainbow_active = 1
 
-
-" Check if we can load the FZF vim plugin
-if filereadable("/usr/local/opt/fzf/bin/fzf")
-  set rtp+=/usr/local/opt/fzf
-end
-
-if filereadable("/home/contrerasjorge/.fzf/bin/fzf")
-  set rtp+=/home/mrnugget/.fzf
-end
 
 set nocompatible
 
@@ -88,13 +68,7 @@ set nowrap
 " Always show the status line at the bottom, even if you only have one window open.
 set laststatus=2
 
-" The backspace key has slightly unintuitive behavior by default. For example,
-" by default, you can't backspace before the insertion point set with 'i'.
-" This configuration makes backspace behave more reasonably, in that you can
-" backspace over anything.
 set backspace=2
-set hidden
-
 set ignorecase
 set smartcase
 set incsearch
@@ -116,11 +90,17 @@ nnoremap <silent> <leader>fc :BCommits<CR>
 nnoremap <silent> <leader>fb :Buffers<CR>
 nnoremap <silent> <leader>fr :History<CR>
 nnoremap <silent> <leader>fi :FZF<CR>
-nnoremap <silent> <C-p> :FZF<CR>
+nnoremap <silent> <leader>gr :GFiles<CR>
+nnoremap <silent> <C-p> :GFiles<CR>
+
+" Check if we can load the FZF vim plugin
+if filereadable("/usr/local/opt/fzf/bin/fzf")
+  set rtp+=/usr/local/opt/fzf
+end
 
 " Python
 autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
-let g:python_host_prog = '/usr/local/lib/python3.7'
+let g:python_host_prog = '/usr/local/lib/python3.8'
 
 au filetype go inoremap <buffer> . .<C-x><C-o>
 
@@ -187,8 +167,6 @@ augroup END
 " Ale
 let g:ale_linters = {'go': ['go build', 'gofmt'], 'rust': ['cargo', 'rls']}
 let g:ale_lint_on_text_changed = 'never'
-let g:ale_ocaml_ocamlformat_options = '--enable-outside-detected-project'
-let g:ale_fixers = {'ocaml': ['ocp-indent']}
 nmap <silent> <leader>aj :ALENext<cr>
 nmap <silent> <leader>ak :ALEPrevious<cr>
 
@@ -209,17 +187,12 @@ augroup END
 " Elm
 let g:polyglot_disabled = ['elm']
 
-" TextEdit might fail if hidden is not set.
-set hidden
+" Coc Default settings
+" see https://github.com/neoclide/coc.nvim
 
 " Some servers have issues with backup files, see #649.
 set nobackup
 set nowritebackup
-
-
-" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
-" delays and poor user experience.
-set updatetime=300
 
 " Don't pass messages to |ins-completion-menu|.
 set shortmess+=c
