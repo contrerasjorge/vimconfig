@@ -1,7 +1,7 @@
 call plug#begin('~/.vim/plugged')
 
+Plug 'connorholyday/vim-snazzy'
 Plug 'ap/vim-css-color'
-Plug 'dracula/vim', { 'as': 'dracula'  }
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'rust-lang/rust.vim'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
@@ -29,54 +29,40 @@ Plug 'elmcast/elm-vim'
 
 call plug#end()
 
+
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 colorscheme default
-set background=light
+"set background=light
 " Give the active window a blue background and white foreground
 hi StatusLine ctermfg=15 ctermbg=32 cterm=bold
 hi SignColumn ctermfg=255 ctermbg=15
 " Highlight search
 hi Search     ctermbg=yellow
 
-" if hidden is not set, TextEdit might fail.
-set hidden
-set updatetime=300
-
 syntax enable
 filetype on
 filetype plugin on
 filetype indent on
 
-let g:rainbow_active = 1
-
-
-set nocompatible
-
-" Turn on syntax highlighting.
 syntax on
-set shortmess+=I
 
-" Show line numbers.
+set cursorline
+set termguicolors
+set wildmenu
 set number
-" set relativenumber
-
+set hidden
+set updatetime=300
+set nocompatible
 set colorcolumn=80
 set showmatch
 set nowrap
-
-" Always show the status line at the bottom, even if you only have one window open.
 set laststatus=2
-
 set backspace=2
 set ignorecase
 set smartcase
 set incsearch
-
-" Disable audible bell because it's annoying.
 set noerrorbells visualbell t_vb=
-
-set mouse+=a
 
 " Indenting
 set tabstop=2
@@ -106,12 +92,12 @@ au filetype go inoremap <buffer> . .<C-x><C-o>
 
 au BufNewFile,BufRead *.py
     \ set tabstop=4
-    \ set softtabstop=4
-    \ set shiftwidth=4
-    \ set textwidth=79
-    \ set expandtab
-    \ set autoindent
-    \ set fileformat=unix
+    \| set softtabstop=4
+    \| set shiftwidth=4
+    \| set textwidth=79
+    \| set expandtab
+    \| set autoindent
+    \| set fileformat=unix
 
 " Go
 nmap <leader>gos :e /usr/local/go/src/<CR>
@@ -165,10 +151,17 @@ augroup ft_rust
 augroup END
 
 " Ale
-let g:ale_linters = {'go': ['go build', 'gofmt'], 'rust': ['cargo', 'rls']}
+let g:ale_linters = {
+      \ 'go': ['go build', 'gofmt'], 
+      \ 'rust': ['cargo', 'rls'],
+      \ 'python': ['flake8', 'pylint']}
+let g:ale_fixers = {
+      \    'python': ['yapf'],
+      \}
 let g:ale_lint_on_text_changed = 'never'
 nmap <silent> <leader>aj :ALENext<cr>
 nmap <silent> <leader>ak :ALEPrevious<cr>
+nmap <silent> <leader>af :ALEFix<cr>
 
 " prettier
 let g:prettier#autoformat = 0
@@ -189,6 +182,8 @@ let g:polyglot_disabled = ['elm']
 
 " Coc Default settings
 " see https://github.com/neoclide/coc.nvim
+
+"hi link CocFloating markdown
 
 " Some servers have issues with backup files, see #649.
 set nobackup
