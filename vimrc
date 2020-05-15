@@ -84,6 +84,31 @@ if filereadable("/usr/local/opt/fzf/bin/fzf")
   set rtp+=/usr/local/opt/fzf
 end
 
+" Ale
+let g:ale_linters = {
+      \ 'go': ['go build', 'gofmt'], 
+      \ 'rust': ['cargo', 'rls'],
+      \ 'python': ['flake8', 'pylint']
+      \ }
+let g:ale_fixers = {
+      \    'python': ['yapf'],
+      \}
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_fixers = {'c': ['clang-format']}
+let g:ale_fix_on_save = 1
+nmap <silent> <leader>aj :ALENext<cr>
+nmap <silent> <leader>ak :ALEPrevious<cr>
+nmap <silent> <leader>af :ALEFix<cr>
+
+" Prettier
+let g:prettier#autoformat = 0
+autocmd BufWritePre *.js,*.jsx,*.ts,*.tsx PrettierAsync
+
+
+
+
+"""""""""""Language Settings"""""""""""
+
 " Python
 autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
 let g:python_host_prog = '/usr/local/lib/python3.8'
@@ -150,23 +175,6 @@ augroup ft_rust
   au Filetype rust nmap <leader>rod <Plug>(rust-doc)
 augroup END
 
-" Ale
-let g:ale_linters = {
-      \ 'go': ['go build', 'gofmt'], 
-      \ 'rust': ['cargo', 'rls'],
-      \ 'python': ['flake8', 'pylint']}
-let g:ale_fixers = {
-      \    'python': ['yapf'],
-      \}
-let g:ale_lint_on_text_changed = 'never'
-nmap <silent> <leader>aj :ALENext<cr>
-nmap <silent> <leader>ak :ALEPrevious<cr>
-nmap <silent> <leader>af :ALEFix<cr>
-
-" prettier
-let g:prettier#autoformat = 0
-autocmd BufWritePre *.js,*.jsx,*.ts,*.tsx PrettierAsync
-
 " Typescript
 augroup ft_typescript
   au!
@@ -180,6 +188,24 @@ augroup END
 " Elm
 let g:polyglot_disabled = ['elm']
 
+" C
+augroup ft_c
+  au!
+  au BufNewFile,BufRead *.h setlocal filetype=c
+  au Filetype c setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
+  au Filetype c setlocal cinoptions=l1,t0,g0 " This fixes weird indentation of switch/case
+  " Kernel Settings
+  " au FileType c setlocal tabstop=8 shiftwidth=8 textwidth=80 noexpandtab
+  " au FileType c setlocal cindent formatoptions=tcqlron cinoptions=:0,l1,t0,g0
+augroup END
+
+
+
+
+
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Coc Default settings
 " see https://github.com/neoclide/coc.nvim
 
