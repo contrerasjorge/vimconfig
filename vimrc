@@ -95,7 +95,8 @@ let g:ale_fixers = {
       \}
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_fixers = {'c': ['clang-format']}
-let g:ale_fix_on_save = 1
+set completeopt=menu,menuone,preview,noselect,noinsert
+"let g:ale_fix_on_save = 0
 nmap <silent> <leader>aj :ALENext<cr>
 nmap <silent> <leader>ak :ALEPrevious<cr>
 nmap <silent> <leader>af :ALEFix<cr>
@@ -209,7 +210,7 @@ augroup END
 " Coc Default settings
 " see https://github.com/neoclide/coc.nvim
 
-"hi link CocFloating markdown
+hi link CocFloating markdown
 
 " Some servers have issues with backup files, see #649.
 set nobackup
