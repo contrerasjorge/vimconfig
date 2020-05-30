@@ -24,7 +24,7 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
 Plug 'HerringtonDarkholme/yats.vim' " TS Syntax"
-Plug 'pangloss/vim-javascript'
+"Plug 'pangloss/vim-javascript'
 Plug 'elmcast/elm-vim'
 
 call plug#end()
@@ -180,7 +180,7 @@ augroup END
 augroup ft_typescript
   au!
 
-  autocmd BufNewFile,BufRead *.tsx,*.jsx set filetype=typescript
+  autocmd BufNewFile,BufRead *.tsx,*.ts set filetype=typescript
 
   au Filetype typescript nmap <c-]> <Plug>(ale_go_to_definition)
   au Filetype typescript setlocal shiftwidth=2 softtabstop=2 expandtab
@@ -188,6 +188,7 @@ augroup END
 
 " Elm
 let g:polyglot_disabled = ['elm']
+autocmd Filetype elm setlocal tabstop=4
 
 " C
 augroup ft_c
