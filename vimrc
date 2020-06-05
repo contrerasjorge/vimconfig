@@ -1,13 +1,11 @@
 call plug#begin('~/.vim/plugged')
 
-Plug 'connorholyday/vim-snazzy'
+Plug 'drewtempelmeyer/palenight.vim'
+Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 Plug 'ap/vim-css-color'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'rust-lang/rust.vim'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-Plug 'prettier/vim-prettier', {
-  \ 'do': 'yarn install',
-  \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql', 'markdown', 'vue', 'yaml', 'html'] }
 Plug 'sheerun/vim-polyglot'
 Plug 'plasticboy/vim-markdown'
 Plug 'junegunn/fzf.vim'
@@ -24,7 +22,6 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
 Plug 'HerringtonDarkholme/yats.vim' " TS Syntax"
-"Plug 'pangloss/vim-javascript'
 Plug 'elmcast/elm-vim'
 
 call plug#end()
@@ -32,8 +29,8 @@ call plug#end()
 
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
-colorscheme default
-"set background=light
+set background=dark
+colorscheme palenight
 " Give the active window a blue background and white foreground
 hi StatusLine ctermfg=15 ctermbg=32 cterm=bold
 hi SignColumn ctermfg=255 ctermbg=15
@@ -102,9 +99,7 @@ nmap <silent> <leader>ak :ALEPrevious<cr>
 nmap <silent> <leader>af :ALEFix<cr>
 
 " Prettier
-let g:prettier#autoformat = 0
-autocmd BufWritePre *.js,*.jsx,*.ts,*.tsx PrettierAsync
-
+command! -nargs=0 Prettier :CocCommand prettier.formatFile
 
 
 
