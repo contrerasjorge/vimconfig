@@ -2,6 +2,7 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'drewtempelmeyer/palenight.vim'
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
+Plug 'jparise/vim-graphql'
 Plug 'ap/vim-css-color'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'rust-lang/rust.vim'
@@ -21,13 +22,17 @@ Plug 'terryma/vim-multiple-cursors'
 Plug 'jiangmiao/auto-pairs'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
-Plug 'HerringtonDarkholme/yats.vim' " TS Syntax"
+Plug 'HerringtonDarkholme/yats.vim' " TS Syntax
 Plug 'elmcast/elm-vim'
 
 call plug#end()
 
 
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+"autocmd BufEnter *.{js,jsx,ts,tsx} :syntax sync fromstart
+"autocmd BufLeave *.{js,jsx,ts,tsx} :syntax sync clear
+"au BufNewFile,BufRead *.ts setlocal filetype=typescript
+"au BufNewFile,BufRead *.tsx setlocal filetype=typescript.tsx
 
 set background=dark
 colorscheme palenight
@@ -85,10 +90,12 @@ end
 let g:ale_linters = {
       \ 'go': ['go build', 'gofmt'], 
       \ 'rust': ['cargo', 'rls'],
-      \ 'python': ['flake8', 'pylint']
+      \ 'python': ['flake8', 'pylint'],
+      "\ 'typescript': ['tsserver']
       \ }
 let g:ale_fixers = {
       \    'python': ['yapf'],
+      "\ 'typescript': ['prettier']
       \}
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_fixers = {'c': ['clang-format']}
