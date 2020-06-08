@@ -1,5 +1,6 @@
 call plug#begin('~/.vim/plugged')
 
+"Plug 'psf/black', { 'branch': 'stable' }
 Plug 'drewtempelmeyer/palenight.vim'
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 Plug 'jparise/vim-graphql'
@@ -22,7 +23,7 @@ Plug 'terryma/vim-multiple-cursors'
 Plug 'jiangmiao/auto-pairs'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
-Plug 'HerringtonDarkholme/yats.vim' " TS Syntax
+"Plug 'HerringtonDarkholme/yats.vim' " TS Syntax
 Plug 'elmcast/elm-vim'
 
 call plug#end()
@@ -31,8 +32,8 @@ call plug#end()
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 "autocmd BufEnter *.{js,jsx,ts,tsx} :syntax sync fromstart
 "autocmd BufLeave *.{js,jsx,ts,tsx} :syntax sync clear
-"au BufNewFile,BufRead *.ts setlocal filetype=typescript
-"au BufNewFile,BufRead *.tsx setlocal filetype=typescript.tsx
+au BufNewFile,BufRead *.ts setlocal filetype=typescript
+au BufNewFile,BufRead *.tsx setlocal filetype=typescript.tsx
 
 set background=dark
 colorscheme palenight
@@ -91,11 +92,9 @@ let g:ale_linters = {
       \ 'go': ['go build', 'gofmt'], 
       \ 'rust': ['cargo', 'rls'],
       \ 'python': ['flake8', 'pylint'],
-      "\ 'typescript': ['tsserver']
       \ }
 let g:ale_fixers = {
-      \    'python': ['yapf'],
-      "\ 'typescript': ['prettier']
+      \    'python': ['black'],
       \}
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_fixers = {'c': ['clang-format']}
@@ -115,6 +114,8 @@ command! -nargs=0 Prettier :CocCommand prettier.formatFile
 " Python
 autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
 let g:python_host_prog = '/usr/local/lib/python3.8'
+"autocmd BufWritePre *.py execute ':Black'
+"nnoremap <F9> :Black<CR>
 
 au filetype go inoremap <buffer> . .<C-x><C-o>
 
@@ -180,9 +181,9 @@ augroup END
 
 " Typescript
 augroup ft_typescript
-  au!
+  "au!
 
-  autocmd BufNewFile,BufRead *.tsx,*.ts set filetype=typescript
+  "autocmd BufNewFile,BufRead *.tsx,*.ts set filetype=typescript
 
   au Filetype typescript nmap <c-]> <Plug>(ale_go_to_definition)
   au Filetype typescript setlocal shiftwidth=2 softtabstop=2 expandtab
