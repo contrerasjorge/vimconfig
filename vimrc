@@ -1,6 +1,5 @@
 call plug#begin('~/.vim/plugged')
 
-"Plug 'psf/black', { 'branch': 'stable' }
 Plug 'drewtempelmeyer/palenight.vim'
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 Plug 'jparise/vim-graphql'
@@ -23,23 +22,19 @@ Plug 'terryma/vim-multiple-cursors'
 Plug 'jiangmiao/auto-pairs'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
-"Plug 'HerringtonDarkholme/yats.vim' " TS Syntax
 Plug 'elmcast/elm-vim'
 
 call plug#end()
 
 
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
-"autocmd BufEnter *.{js,jsx,ts,tsx} :syntax sync fromstart
-"autocmd BufLeave *.{js,jsx,ts,tsx} :syntax sync clear
-au BufNewFile,BufRead *.ts setlocal filetype=typescript
-au BufNewFile,BufRead *.tsx setlocal filetype=typescript.tsx
 
 set background=dark
 colorscheme palenight
 " Give the active window a blue background and white foreground
 hi StatusLine ctermfg=15 ctermbg=32 cterm=bold
 hi SignColumn ctermfg=255 ctermbg=15
+
 " Highlight search
 hi Search     ctermbg=yellow
 
@@ -99,7 +94,6 @@ let g:ale_fixers = {
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_fixers = {'c': ['clang-format']}
 set completeopt=menu,menuone,preview,noselect,noinsert
-"let g:ale_fix_on_save = 0
 nmap <silent> <leader>aj :ALENext<cr>
 nmap <silent> <leader>ak :ALEPrevious<cr>
 nmap <silent> <leader>af :ALEFix<cr>
@@ -111,11 +105,10 @@ command! -nargs=0 Prettier :CocCommand prettier.formatFile
 
 """""""""""Language Settings"""""""""""
 
+
 " Python
 autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
 let g:python_host_prog = '/usr/local/lib/python3.8'
-"autocmd BufWritePre *.py execute ':Black'
-"nnoremap <F9> :Black<CR>
 
 au filetype go inoremap <buffer> . .<C-x><C-o>
 
@@ -127,6 +120,7 @@ au BufNewFile,BufRead *.py
     \| set expandtab
     \| set autoindent
     \| set fileformat=unix
+
 
 " Go
 nmap <leader>gos :e /usr/local/go/src/<CR>
@@ -167,6 +161,7 @@ augroup ft_golang
   autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
 augroup END
 
+
 " Rust
 let g:rustfmt_autosave = 1
 "let g:rustfmt_fail_silently = 0
@@ -179,19 +174,22 @@ augroup ft_rust
   au Filetype rust nmap <leader>rod <Plug>(rust-doc)
 augroup END
 
+
 " Typescript
 augroup ft_typescript
-  "au!
+  au!
 
-  "autocmd BufNewFile,BufRead *.tsx,*.ts set filetype=typescript
+  autocmd BufNewFile,BufRead *.tsx,*.ts set filetype=typescript
 
   au Filetype typescript nmap <c-]> <Plug>(ale_go_to_definition)
   au Filetype typescript setlocal shiftwidth=2 softtabstop=2 expandtab
 augroup END
 
+
 " Elm
 let g:polyglot_disabled = ['elm']
 autocmd Filetype elm setlocal tabstop=4
+
 
 " C
 augroup ft_c
