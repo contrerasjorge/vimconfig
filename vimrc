@@ -179,7 +179,8 @@ augroup END
 augroup ft_typescript
   au!
 
-  autocmd BufNewFile,BufRead *.tsx,*.ts set filetype=typescript
+  autocmd BufNewFile,BufRead *.ts set filetype=typescript
+  autocmd BufNewFile,BufRead *.tsx set filetype=typescriptreact
 
   au Filetype typescript nmap <c-]> <Plug>(ale_go_to_definition)
   au Filetype typescript setlocal shiftwidth=2 softtabstop=2 expandtab
