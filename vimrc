@@ -214,6 +214,16 @@ augroup ft_c
 augroup END
 
 
+"let g:coc_global_extensions = [
+  "\ 'coc-snippets',
+  "\ 'coc-pairs',
+  "\ 'coc-tsserver',
+  "\ 'coc-prettier',
+  "\ 'coc-json',
+  "\ 'coc-python',
+  "\ 'coc-flutter',
+  "\ 'coc-deno',
+  "\ ]
 
 
 
