@@ -1,5 +1,6 @@
 call plug#begin('~/.vim/plugged')
 
+Plug 'sjl/tslime.vim'
 Plug 'drewtempelmeyer/palenight.vim'
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 Plug 'jparise/vim-graphql'
@@ -86,13 +87,11 @@ end
 let g:ale_linters = {
       \ 'go': ['go build', 'gofmt'], 
       \ 'rust': ['cargo', 'rls'],
-      \ 'python': ['flake8', 'pylint'],
       \ }
 let g:ale_fixers = {
-      \    'python': ['black'],
+      \ 'c': ['clang-format']
       \}
 let g:ale_lint_on_text_changed = 'never'
-let g:ale_fixers = {'c': ['clang-format']}
 set completeopt=menu,menuone,preview,noselect,noinsert
 nmap <silent> <leader>aj :ALENext<cr>
 nmap <silent> <leader>ak :ALEPrevious<cr>
@@ -101,16 +100,25 @@ nmap <silent> <leader>af :ALEFix<cr>
 " Prettier
 command! -nargs=0 Prettier :CocCommand prettier.formatFile
 
+" tslime.vim
+let g:tslime_ensure_trailing_newlines = 1 " Always send newline
+let g:tslime_normal_mapping = '<leader>sl'
+let g:tslime_visual_mapping = '<leader>sl'
+
 
 
 """""""""""Language Settings"""""""""""
 
 
+" Racket
+au BufEnter,BufNewFile,BufRead *.rkt set filetype=racket
+
+
 " Python
 autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
-let g:python_host_prog = '/usr/local/lib/python3.8'
+"let g:python_host_prog = '/usr/local/lib/python3.8'
 
-au filetype go inoremap <buffer> . .<C-x><C-o>
+"au filetype go inoremap <buffer> . .<C-x><C-o>
 
 au BufNewFile,BufRead *.py
     \ set tabstop=4
@@ -185,6 +193,8 @@ augroup ft_typescript
   au Filetype typescript nmap <c-]> <Plug>(ale_go_to_definition)
   au Filetype typescript setlocal shiftwidth=2 softtabstop=2 expandtab
 augroup END
+
+
 
 
 " Elm
