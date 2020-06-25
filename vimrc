@@ -1,5 +1,6 @@
 call plug#begin('~/.vim/plugged')
 
+Plug 'vim-airline/vim-airline'
 Plug 'sjl/tslime.vim'
 Plug 'drewtempelmeyer/palenight.vim'
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
@@ -20,7 +21,6 @@ Plug 'w0rp/ale'
 Plug 'bronson/vim-visual-star-search'
 Plug 'mattn/emmet-vim'
 Plug 'terryma/vim-multiple-cursors'
-Plug 'jiangmiao/auto-pairs'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
 Plug 'elmcast/elm-vim'
@@ -92,6 +92,7 @@ let g:ale_fixers = {
       \ 'c': ['clang-format']
       \}
 let g:ale_lint_on_text_changed = 'never'
+let g:ale_fix_on_save = 1
 set completeopt=menu,menuone,preview,noselect,noinsert
 nmap <silent> <leader>aj :ALENext<cr>
 nmap <silent> <leader>ak :ALEPrevious<cr>
@@ -116,10 +117,6 @@ au BufEnter,BufNewFile,BufRead *.rkt set filetype=racket
 
 " Python
 autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
-"let g:python_host_prog = '/usr/local/lib/python3.8'
-
-"au filetype go inoremap <buffer> . .<C-x><C-o>
-
 au BufNewFile,BufRead *.py
     \ set tabstop=4
     \| set softtabstop=4
@@ -187,8 +184,7 @@ augroup END
 augroup ft_typescript
   au!
 
-  autocmd BufNewFile,BufRead *.ts set filetype=typescript
-  autocmd BufNewFile,BufRead *.tsx set filetype=typescriptreact
+  "autocmd BufNewFile,BufRead *.tsx set filetype=typescriptreact
 
   au Filetype typescript nmap <c-]> <Plug>(ale_go_to_definition)
   au Filetype typescript setlocal shiftwidth=2 softtabstop=2 expandtab
@@ -208,10 +204,13 @@ augroup ft_c
   au BufNewFile,BufRead *.h setlocal filetype=c
   au Filetype c setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
   au Filetype c setlocal cinoptions=l1,t0,g0 " This fixes weird indentation of switch/case
-  " Kernel Settings
-  " au FileType c setlocal tabstop=8 shiftwidth=8 textwidth=80 noexpandtab
-  " au FileType c setlocal cindent formatoptions=tcqlron cinoptions=:0,l1,t0,g0
 augroup END
+
+
+
+" Trigger for code actions
+" Make sure `"codeLens.enable": true` is set in your coc config
+nnoremap <leader>cl :<C-u>call CocActionAsync('codeLensAction')<CR>
 
 
 "let g:coc_global_extensions = [
@@ -225,7 +224,8 @@ augroup END
   "\ 'coc-deno',
   "\ ]
 
-
+" add comment highlighting for json
+autocmd FileType json syntax match Comment +\/\/.\+$+
 
 
 
@@ -364,3 +364,23 @@ nnoremap <silent> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+
+
+" for settings below take a look at
+" https://github.com/scalameta/coc-metals/blob/master/coc-mappings.vim
+
+" Notify coc.nvim that <enter> has been pressed.
+" Currently used for the formatOnType feature.
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+      \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+" Toggle panel with Tree Views
+nnoremap <silent> <space>t :<C-u>CocCommand metals.tvp<CR>
+" Toggle Tree View 'metalsPackages'
+nnoremap <silent> <space>tp :<C-u>CocCommand metals.tvp metalsPackages<CR>
+" Toggle Tree View 'metalsCompile'
+nnoremap <silent> <space>tc :<C-u>CocCommand metals.tvp metalsCompile<CR>
+" Toggle Tree View 'metalsBuild'
+nnoremap <silent> <space>tb :<C-u>CocCommand metals.tvp metalsBuild<CR>
+" Reveal current current class (trait or object) in Tree View 'metalsPackages'
+nnoremap <silent> <space>tf :<C-u>CocCommand metals.revealInTreeView metalsPackages<CR>
