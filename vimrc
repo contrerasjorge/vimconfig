@@ -23,7 +23,6 @@ Plug 'mattn/emmet-vim'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
-Plug 'elmcast/elm-vim'
 
 call plug#end()
 
@@ -191,13 +190,6 @@ augroup ft_typescript
 augroup END
 
 
-
-
-" Elm
-let g:polyglot_disabled = ['elm']
-autocmd Filetype elm setlocal tabstop=4
-
-
 " C
 augroup ft_c
   au!
@@ -208,9 +200,6 @@ augroup END
 
 
 
-" Trigger for code actions
-" Make sure `"codeLens.enable": true` is set in your coc config
-nnoremap <leader>cl :<C-u>call CocActionAsync('codeLensAction')<CR>
 
 
 "let g:coc_global_extensions = [
