@@ -1,5 +1,6 @@
 call plug#begin('~/.vim/plugged')
 
+Plug 'Olical/conjure', {'tag': 'v4.1.0'}
 Plug 'vim-airline/vim-airline'
 Plug 'sjl/tslime.vim'
 Plug 'drewtempelmeyer/palenight.vim'
@@ -86,6 +87,7 @@ end
 let g:ale_linters = {
       \ 'go': ['go build', 'gofmt'], 
       \ 'rust': ['cargo', 'rls'],
+      \ 'clojure': ['clj-kondo', 'joker']
       \ }
 let g:ale_fixers = {
       \ 'c': ['clang-format']
