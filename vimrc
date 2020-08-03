@@ -3,7 +3,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'Olical/conjure', {'tag': 'v4.1.0'}
 Plug 'vim-airline/vim-airline'
 Plug 'sjl/tslime.vim'
-Plug 'drewtempelmeyer/palenight.vim'
+Plug 'joshdick/onedark.vim'
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 Plug 'jparise/vim-graphql'
 Plug 'ap/vim-css-color'
@@ -31,7 +31,8 @@ call plug#end()
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 set background=dark
-colorscheme palenight
+"colorscheme palenight
+colorscheme onedark
 " Give the active window a blue background and white foreground
 hi StatusLine ctermfg=15 ctermbg=32 cterm=bold
 hi SignColumn ctermfg=255 ctermbg=15
@@ -185,7 +186,7 @@ augroup END
 augroup ft_typescript
   au!
 
-  "autocmd BufNewFile,BufRead *.tsx set filetype=typescriptreact
+  autocmd BufNewFile,BufRead *.tsx set filetype=typescriptreact
 
   au Filetype typescript nmap <c-]> <Plug>(ale_go_to_definition)
   au Filetype typescript setlocal shiftwidth=2 softtabstop=2 expandtab
@@ -210,9 +211,10 @@ augroup END
   "\ 'coc-tsserver',
   "\ 'coc-prettier',
   "\ 'coc-json',
-  "\ 'coc-python',
+  "\ 'coc-pyright',
   "\ 'coc-flutter',
   "\ 'coc-deno',
+  "\ 'coc-metals',
   "\ ]
 
 " add comment highlighting for json
