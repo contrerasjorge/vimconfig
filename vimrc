@@ -21,7 +21,8 @@ Plug 'janko-m/vim-test'
 Plug 'w0rp/ale'
 Plug 'bronson/vim-visual-star-search'
 Plug 'mattn/emmet-vim'
-Plug 'terryma/vim-multiple-cursors'
+"Plug 'terryma/vim-multiple-cursors'
+Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
 
