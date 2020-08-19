@@ -3,7 +3,6 @@ call plug#begin('~/.vim/plugged')
 Plug 'Olical/conjure', {'tag': 'v4.1.0'}
 Plug 'vim-airline/vim-airline'
 Plug 'sjl/tslime.vim'
-Plug 'joshdick/onedark.vim'
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 Plug 'jparise/vim-graphql'
 Plug 'ap/vim-css-color'
@@ -21,19 +20,27 @@ Plug 'janko-m/vim-test'
 Plug 'w0rp/ale'
 Plug 'bronson/vim-visual-star-search'
 Plug 'mattn/emmet-vim'
-"Plug 'terryma/vim-multiple-cursors'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
+"Plug 'ayu-theme/ayu-vim'
+Plug 'kjssad/quantum.vim'
+"Plug 'joshdick/onedark.vim'
 
 call plug#end()
 
 
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
-set background=dark
+set termguicolors     " enable true colors support
+set background=light
+colorscheme quantum
+"let ayucolor="light"  " for light version of theme
+"colorscheme ayu
+
+"set background=dark
 "colorscheme palenight
-colorscheme onedark
+"colorscheme onedark
 " Give the active window a blue background and white foreground
 hi StatusLine ctermfg=15 ctermbg=32 cterm=bold
 hi SignColumn ctermfg=255 ctermbg=15
@@ -49,7 +56,6 @@ filetype indent on
 syntax on
 
 set cursorline
-set termguicolors
 set wildmenu
 set number
 set hidden
