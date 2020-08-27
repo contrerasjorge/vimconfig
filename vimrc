@@ -23,9 +23,8 @@ Plug 'mattn/emmet-vim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
-"Plug 'ayu-theme/ayu-vim'
-Plug 'kjssad/quantum.vim'
-"Plug 'joshdick/onedark.vim'
+Plug 'joshdick/onedark.vim'
+Plug 'psf/black', { 'branch': 'stable' }
 
 call plug#end()
 
@@ -33,14 +32,15 @@ call plug#end()
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 set termguicolors     " enable true colors support
-set background=light
-colorscheme quantum
+"set background=light
+"colorscheme quantum
 "let ayucolor="light"  " for light version of theme
 "colorscheme ayu
 
-"set background=dark
+set background=dark
+
 "colorscheme palenight
-"colorscheme onedark
+colorscheme onedark
 " Give the active window a blue background and white foreground
 hi StatusLine ctermfg=15 ctermbg=32 cterm=bold
 hi SignColumn ctermfg=255 ctermbg=15
@@ -134,6 +134,7 @@ au BufNewFile,BufRead *.py
     \| set expandtab
     \| set autoindent
     \| set fileformat=unix
+autocmd BufWritePre *.py execute ':Black'
 
 
 " Go
