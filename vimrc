@@ -3,7 +3,6 @@ call plug#begin('~/.vim/plugged')
 Plug 'Olical/conjure', {'tag': 'v4.1.0'}
 Plug 'vim-airline/vim-airline'
 Plug 'sjl/tslime.vim'
-Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 Plug 'jparise/vim-graphql'
 Plug 'ap/vim-css-color'
 Plug 'christoomey/vim-tmux-navigator'
@@ -24,7 +23,6 @@ Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
 Plug 'joshdick/onedark.vim'
-Plug 'psf/black', { 'branch': 'stable' }
 
 call plug#end()
 
@@ -32,10 +30,6 @@ call plug#end()
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 set termguicolors     " enable true colors support
-"set background=light
-"colorscheme quantum
-"let ayucolor="light"  " for light version of theme
-"colorscheme ayu
 
 set background=dark
 
@@ -95,10 +89,12 @@ end
 let g:ale_linters = {
       \ 'go': ['go build', 'gofmt'], 
       \ 'rust': ['cargo', 'rls'],
-      \ 'clojure': ['clj-kondo', 'joker']
+      \ 'clojure': ['clj-kondo', 'joker'],
+      \ 'python': ['flake8', 'pylint']
       \ }
 let g:ale_fixers = {
-      \ 'c': ['clang-format']
+      \ 'c': ['clang-format'],
+      \ 'python': ['yapf']
       \}
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_fix_on_save = 1
@@ -134,7 +130,6 @@ au BufNewFile,BufRead *.py
     \| set expandtab
     \| set autoindent
     \| set fileformat=unix
-autocmd BufWritePre *.py execute ':Black'
 
 
 " Go
@@ -209,21 +204,6 @@ augroup ft_c
   au Filetype c setlocal cinoptions=l1,t0,g0 " This fixes weird indentation of switch/case
 augroup END
 
-
-
-
-
-"let g:coc_global_extensions = [
-  "\ 'coc-snippets',
-  "\ 'coc-pairs',
-  "\ 'coc-tsserver',
-  "\ 'coc-prettier',
-  "\ 'coc-json',
-  "\ 'coc-pyright',
-  "\ 'coc-flutter',
-  "\ 'coc-deno',
-  "\ 'coc-metals',
-  "\ ]
 
 " add comment highlighting for json
 autocmd FileType json syntax match Comment +\/\/.\+$+
