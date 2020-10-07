@@ -29,11 +29,9 @@ call plug#end()
 
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
-set termguicolors     " enable true colors support
-
+set termguicolors "enable true colors support
 set background=dark
 
-"colorscheme palenight
 colorscheme onedark
 " Give the active window a blue background and white foreground
 hi StatusLine ctermfg=15 ctermbg=32 cterm=bold
@@ -205,7 +203,7 @@ augroup ft_c
 augroup END
 
 
-" add comment highlighting for json
+" Add comment highlighting for json
 autocmd FileType json syntax match Comment +\/\/.\+$+
 
 
