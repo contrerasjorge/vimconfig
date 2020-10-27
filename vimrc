@@ -22,17 +22,22 @@ Plug 'mattn/emmet-vim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
-Plug 'joshdick/onedark.vim'
+Plug 'jonathanfilip/vim-lucius'
 
 call plug#end()
 
 
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
-set termguicolors "enable true colors support
-set background=dark
+set statusline+=\|\ %{coc#status()}
 
-colorscheme onedark
+set termguicolors "enable true colors support
+set background=light
+let g:lucius_style  = 'light'
+let g:lucius_contrast  = 'high'
+let g:lucius_contrast_bg  = 'normal'
+let g:lucius_no_term_bg  = 1
+colorscheme lucius
 " Give the active window a blue background and white foreground
 hi StatusLine ctermfg=15 ctermbg=32 cterm=bold
 hi SignColumn ctermfg=255 ctermbg=15
