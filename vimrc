@@ -23,6 +23,7 @@ Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
 Plug 'jonathanfilip/vim-lucius'
+Plug 'ElmCast/elm-vim'
 
 call plug#end()
 
