@@ -1,6 +1,5 @@
 call plug#begin('~/.vim/plugged')
 
-Plug 'Olical/conjure', {'tag': 'v4.1.0'}
 Plug 'vim-airline/vim-airline'
 Plug 'sjl/tslime.vim'
 Plug 'jparise/vim-graphql'
@@ -22,8 +21,8 @@ Plug 'mattn/emmet-vim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
-Plug 'jonathanfilip/vim-lucius'
-Plug 'ElmCast/elm-vim'
+Plug 'JuliaEditorSupport/julia-vim'
+Plug 'kaicataldo/material.vim', { 'branch': 'main' }
 
 call plug#end()
 
@@ -35,12 +34,13 @@ autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 set statusline+=\|\ %{coc#status()}
 
 set termguicolors "enable true colors support
-set background=light
+"set background=light
 let g:lucius_style  = 'light'
 let g:lucius_contrast  = 'high'
 let g:lucius_contrast_bg  = 'normal'
 let g:lucius_no_term_bg  = 1
-colorscheme lucius
+colorscheme material
+let g:material_theme_style = 'palenight'
 " Give the active window a blue background and white foreground
 hi StatusLine ctermfg=15 ctermbg=32 cterm=bold
 hi SignColumn ctermfg=255 ctermbg=15
