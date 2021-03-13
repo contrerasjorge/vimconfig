@@ -5,9 +5,7 @@ Plug 'sjl/tslime.vim'
 Plug 'jparise/vim-graphql'
 Plug 'ap/vim-css-color'
 Plug 'christoomey/vim-tmux-navigator'
-"Plug 'rust-lang/rust.vim'
-"Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-Plug 'sheerun/vim-polyglot'
+"Plug 'sheerun/vim-polyglot'
 Plug 'plasticboy/vim-markdown'
 Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-fugitive'
@@ -15,17 +13,28 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-vinegar'
 Plug 'tpope/vim-eunuch'
 Plug 'janko-m/vim-test'
-"Plug 'w0rp/ale'
-"Plug 'bronson/vim-visual-star-search'
 Plug 'mattn/emmet-vim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
-"Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdcommenter'
 Plug 'JuliaEditorSupport/julia-vim'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'kaicataldo/material.vim', { 'branch': 'main' }
+
+" file explorer
+Plug 'kyazdani42/nvim-web-devicons' " for file icons
+Plug 'kyazdani42/nvim-tree.lua'
 
 " nvim lsp
 Plug 'neovim/nvim-lspconfig'
+" Autocompletion framework for built-in LSP
+Plug 'nvim-lua/completion-nvim'
+" Extensions to built-in LSP, provides type inlay hints
+Plug 'nvim-lua/lsp_extensions.nvim'
+Plug 'scalameta/nvim-metals'
+
+" luapad - Danger
+Plug 'rafcamlet/nvim-luapad'
+
 
 " For telescope
 Plug 'nvim-lua/popup.nvim'
@@ -54,6 +63,8 @@ hi SignColumn ctermfg=255 ctermbg=15
 
 " Highlight search
 hi Search     ctermbg=yellow
+
+set shortmess-=F
 
 syntax enable
 filetype on
@@ -114,6 +125,11 @@ nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 nnoremap <leader>fl <cmd>Telescope git_files<cr>
 
+" File explorer
+nnoremap <leader>tt :NvimTreeToggle<CR>
+nnoremap <leader>tr :NvimTreeRefresh<CR>
+nnoremap <leader>tn :NvimTreeFindFile<CR>
+
 
 """""""""""Language Settings"""""""""""
 
@@ -133,69 +149,13 @@ au BufNewFile,BufRead *.py
     \| set autoindent
     \| set fileformat=unix
 
-
-" Go
-nmap <leader>gos :e /usr/local/go/src/<CR>
-"let g:go_auto_type_info = 1
-let g:go_fmt_command = "goimports"
-let g:go_highlight_structs = 0
-let g:go_rename_command = "gopls"
-let g:go_echo_command_info = 1
-
-let g:go_def_mode='gopls'
-let g:go_info_mode='gopls'
-let g:go_test_show_name = 1
-
-let g:go_term_mode = "split"
-let g:go_term_height = 10
-" let g:go_term_enabled = 1
-
-augroup ft_golang
+" Scala
+augroup lsp_scala
   au!
-  au BufEnter,BufNewFile,BufRead *.go setlocal noexpandtab shiftwidth=4 tabstop=4 softtabstop=4 nolist
-  au BufEnter,BufNewFile,BufRead *.go setlocal completeopt-=preview
-  " Enable automatic continuation of comment inserting
-  au BufEnter,BufNewFile,BufRead *.go setlocal formatoptions+=ro
-  au BufEnter,BufNewFile,BufRead *.tmpl setlocal filetype=html
-
-  au Filetype go nmap <c-]> <Plug>(go-def)
-  au Filetype go nmap <leader>goi <Plug>(go-info)
-  au Filetype go nmap <leader>god :GoDeclsDir<CR>
-  au Filetype go nmap <leader>gou <Plug>(go-run)
-  au Filetype go nmap <leader>gor <Plug>(go-rename)
-  au Filetype go nmap <leader>got :GoTest!<CR>
-  au Filetype go nmap <leader>rt :GoTestFunc!<CR>
-  au Filetype go nmap <leader>gom :GoImports<CR>
-  au Filetype go nmap <leader>gie <Plug>(go-iferr) 
-                            
-  autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
-  autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
-  autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
-augroup END
-
-
-" Rust
-let g:rustfmt_autosave = 1
-"let g:rustfmt_fail_silently = 0
-
-augroup ft_rust
-  au!
-  au BufEnter,BufNewFile,BufRead *.rs :compiler cargo
-
-  au Filetype rust nmap <c-]> <Plug>(rust-def)
-  au Filetype rust nmap <leader>rod <Plug>(rust-doc)
-augroup END
-
-
-" Typescript
-augroup ft_typescript
-  au!
-
-  autocmd BufNewFile,BufRead *.tsx set filetype=typescriptreact
-
-  au Filetype typescript nmap <c-]> <Plug>(ale_go_to_definition)
-  au Filetype typescript setlocal shiftwidth=2 softtabstop=2 expandtab
-augroup END
+  lua metals_config = require('metals').bare_config
+  lua metals_config.init_options.statusBarProvider = 'on'
+  au FileType scala,sbt lua require('metals').initialize_or_attach(metals_config)
+augroup end
 
 
 " C
@@ -209,4 +169,77 @@ augroup END
 
 " Add comment highlighting for json
 autocmd FileType json syntax match Comment +\/\/.\+$+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" LSP
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+:lua << EOF
+  local nvim_lsp = require('lspconfig')
+
+  local on_attach = function(client, bufnr)
+    require('completion').on_attach()
+
+    local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+    local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+
+    buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+    -- Mappings
+    local opts = { noremap=true, silent=true }
+    buf_set_keymap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+    buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
+    buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
+    buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+    buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+    buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+    buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+    buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+    buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+    buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+    buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+    buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+    buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
+    buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+    buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+
+    -- Set some keybinds conditional on server capabilities
+    if client.resolved_capabilities.document_formatting then
+        buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+    elseif client.resolved_capabilities.document_range_formatting then
+        buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+    end
+
+    -- Set autocommands conditional on server_capabilities
+    if client.resolved_capabilities.document_highlight then
+        require('lspconfig').util.nvim_multiline_command [[
+        :hi LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow
+        :hi LspReferenceText cterm=bold ctermbg=red guibg=LightYellow
+        :hi LspReferenceWrite cterm=bold ctermbg=red guibg=LightYellow
+        augroup lsp_document_highlight
+            autocmd!
+            autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
+            autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
+        augroup END
+        ]]
+    end
+  end
+
+  local servers = {'pyright', 'gopls', 'rust_analyzer'}
+  for _, lsp in ipairs(servers) do
+    nvim_lsp[lsp].setup {
+      on_attach = on_attach,
+    }
+  end
+
+  require'nvim-treesitter.configs'.setup {
+    highlight = {
+      enable = true
+    },
+  }
+EOF
+
+" Completion
+let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
