@@ -10,7 +10,7 @@ Plug 'plasticboy/vim-markdown'
 Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-vinegar'
+"Plug 'tpope/vim-vinegar'
 Plug 'tpope/vim-eunuch'
 Plug 'janko-m/vim-test'
 Plug 'mattn/emmet-vim'
@@ -18,7 +18,7 @@ Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'preservim/nerdcommenter'
 Plug 'JuliaEditorSupport/julia-vim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'kaicataldo/material.vim', { 'branch': 'main' }
+Plug 'joshdick/onedark.vim'
 
 " file explorer
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
@@ -32,30 +32,29 @@ Plug 'nvim-lua/completion-nvim'
 Plug 'nvim-lua/lsp_extensions.nvim'
 Plug 'scalameta/nvim-metals'
 
+Plug 'tjdevries/nlua.nvim'
+Plug 'euclidianAce/BetterLua.vim'
 " luapad - Danger
 Plug 'rafcamlet/nvim-luapad'
 
+" debuggger
+Plug 'mfussenegger/nvim-dap'
 
 " For telescope
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 
-
 call plug#end()
 
+
 " You can move anywhere!!!
-set virtualedit=all
+" set virtualedit=all
 
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 set termguicolors "enable true colors support
-let g:lucius_style  = 'light'
-let g:lucius_contrast  = 'high'
-let g:lucius_contrast_bg  = 'normal'
-let g:lucius_no_term_bg  = 1
-colorscheme material
-let g:material_theme_style = 'palenight'
+colorscheme onedark
 
 " Give the active window a blue background and white foreground
 hi StatusLine ctermfg=15 ctermbg=32 cterm=bold
@@ -149,15 +148,6 @@ au BufNewFile,BufRead *.py
     \| set autoindent
     \| set fileformat=unix
 
-" Scala
-augroup lsp_scala
-  au!
-  lua metals_config = require('metals').bare_config
-  lua metals_config.init_options.statusBarProvider = 'on'
-  au FileType scala,sbt lua require('metals').initialize_or_attach(metals_config)
-augroup end
-
-
 " C
 augroup ft_c
   au!
@@ -166,15 +156,31 @@ augroup ft_c
   au Filetype c setlocal cinoptions=l1,t0,g0 " This fixes weird indentation of switch/case
 augroup END
 
-
-" Add comment highlighting for json
+" JSON color highlighting
 autocmd FileType json syntax match Comment +\/\/.\+$+
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " LSP
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 :lua << EOF
   local nvim_lsp = require('lspconfig')
+
+  local function opt(scope, key, value)
+    local scopes = {o = vim.o, b = vim.bo, w = vim.wo}
+    scopes[scope][key] = value
+    if scope ~= 'o' then
+      scopes['o'][key] = value
+    end
+  end
+
+  local function map(mode, lhs, rhs, opts)
+    local options = {noremap = true, silent = true}
+    if opts then
+      options = vim.tbl_extend('force', options, opts)
+    end
+    vim.api.nvim_set_keymap(mode, lhs, rhs, options)
+  end
 
   local on_attach = function(client, bufnr)
     require('completion').on_attach()
@@ -202,36 +208,63 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
     buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
     buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
 
-    -- Set some keybinds conditional on server capabilities
     if client.resolved_capabilities.document_formatting then
         buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
     elseif client.resolved_capabilities.document_range_formatting then
         buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
     end
 
-    -- Set autocommands conditional on server_capabilities
-    if client.resolved_capabilities.document_highlight then
-        require('lspconfig').util.nvim_multiline_command [[
-        :hi LspReferenceRead cterm=bold ctermbg=red guibg=LightYellow
-        :hi LspReferenceText cterm=bold ctermbg=red guibg=LightYellow
-        :hi LspReferenceWrite cterm=bold ctermbg=red guibg=LightYellow
-        augroup lsp_document_highlight
-            autocmd!
-            autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-            autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
-        augroup END
-        ]]
-    end
   end
 
-  local servers = {'pyright', 'gopls', 'rust_analyzer'}
+
+  local servers = {'pyright', 'gopls', 'rust_analyzer', 'tsserver'}
   for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup {
       on_attach = on_attach,
     }
   end
 
-  require'nvim-treesitter.configs'.setup {
+  vim.cmd [[augroup lsp]]
+  vim.cmd [[autocmd!]]
+  vim.cmd [[autocmd FileType scala setlocal omnifunc=v:lua.vim.lsp.omnifunc]]
+  vim.cmd [[autocmd FileType scala,sbt lua require("metals").initialize_or_attach(metals_config)]]
+  vim.cmd [[augroup end]]
+  metals_config = require('metals').bare_config
+  metals_config.init_options.statusBarProvider = 'on'
+  metals_config.on_attach = function(client, bufnr)
+    require('metals').setup_dap()
+  end
+
+  local dap = require('dap')
+  dap.configurations.scala = {
+      {
+        type = 'scala',
+        request = 'launch',
+        name = 'Run',
+        metalsRunType = 'run'
+      },
+      {
+        type = 'scala',
+        request = 'launch',
+        name = 'Test File',
+        metalsRunType = 'testFile'
+      },
+      {
+        type = 'scala',
+        request = 'launch',
+        name = 'Test Target',
+        metalsRunType = 'testTarget'
+      }
+    }
+
+  -- nvim-dap
+  map('n', '<leader>dtb', '<cmd>lua require"dap".toggle_breakpoint()<CR>')
+  map('n', '<leader>dso', '<cmd>lua require"dap".step_over()<CR>')
+  map('n', '<leader>dsi', '<cmd>lua require"dap".step_into()<CR>')
+  map('n', '<F5>', '<cmd>lua require"dap".continue()<CR>')
+
+  -- treesitter config
+  require('nvim-treesitter.configs').setup {
     highlight = {
       enable = true
     },
