@@ -65,6 +65,7 @@ hi Search     ctermbg=yellow
 
 set shortmess-=F
 
+
 syntax enable
 filetype on
 filetype plugin on
@@ -87,6 +88,8 @@ set ignorecase
 set smartcase
 set incsearch
 set noerrorbells visualbell t_vb=
+
+set completeopt=menuone,noinsert,noselect
 
 " Indenting
 set tabstop=2
@@ -224,16 +227,23 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
     }
   end
 
-  vim.cmd [[augroup lsp]]
-  vim.cmd [[autocmd!]]
-  vim.cmd [[autocmd FileType scala setlocal omnifunc=v:lua.vim.lsp.omnifunc]]
-  vim.cmd [[autocmd FileType scala,sbt lua require("metals").initialize_or_attach(metals_config)]]
-  vim.cmd [[augroup end]]
-  metals_config = require('metals').bare_config
-  metals_config.init_options.statusBarProvider = 'on'
-  metals_config.on_attach = function(client, bufnr)
-    require('metals').setup_dap()
-  end
+  cmd = vim.cmd
+
+  cmd [[augroup lsp]]
+  cmd [[au!]]
+  cmd [[au FileType scala,sbt lua require("metals").initialize_or_attach(metals_config)]]
+  cmd [[augroup end]]
+
+  metals_config = require'metals'.bare_config
+  metals_config.settings = {
+    showImplicitArguments = true,
+    showInferredTypes = true,
+    excludedPackages = {
+      "akka.actor.typed.javadsl",
+      "com.github.swagger.akka.javadsl"
+    }
+  }
+
 
   local dap = require('dap')
   dap.configurations.scala = {
