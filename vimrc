@@ -237,7 +237,7 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
   metals_config = require'metals'.bare_config
   metals_config.settings = {
     showImplicitArguments = true,
-    showInferredTypes = true,
+    showInferredType = true,
     excludedPackages = {
       "akka.actor.typed.javadsl",
       "com.github.swagger.akka.javadsl"
