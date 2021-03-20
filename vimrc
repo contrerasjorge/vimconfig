@@ -1,5 +1,7 @@
 call plug#begin('~/.vim/plugged')
 
+Plug 'sbdchd/neoformat'
+Plug 'jiangmiao/auto-pairs'
 Plug 'vim-airline/vim-airline'
 Plug 'sjl/tslime.vim'
 Plug 'jparise/vim-graphql'
@@ -159,6 +161,11 @@ augroup ft_c
   au BufNewFile,BufRead *.h setlocal filetype=c
   au Filetype c setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
   au Filetype c setlocal cinoptions=l1,t0,g0 " This fixes weird indentation of switch/case
+augroup END
+
+augroup fmt
+  autocmd!
+  autocmd BufWritePre * undojoin | Neoformat
 augroup END
 
 " JSON color highlighting
