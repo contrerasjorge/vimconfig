@@ -1,5 +1,6 @@
 call plug#begin('~/.vim/plugged')
 
+Plug 'w0rp/ale'
 Plug 'sbdchd/neoformat'
 Plug 'jiangmiao/auto-pairs'
 Plug 'vim-airline/vim-airline'
@@ -7,12 +8,10 @@ Plug 'sjl/tslime.vim'
 Plug 'jparise/vim-graphql'
 Plug 'ap/vim-css-color'
 Plug 'christoomey/vim-tmux-navigator'
-"Plug 'sheerun/vim-polyglot'
 Plug 'plasticboy/vim-markdown'
 Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
-"Plug 'tpope/vim-vinegar'
 Plug 'tpope/vim-eunuch'
 Plug 'janko-m/vim-test'
 Plug 'mattn/emmet-vim'
@@ -20,7 +19,10 @@ Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'preservim/nerdcommenter'
 Plug 'JuliaEditorSupport/julia-vim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+" Theme
 Plug 'joshdick/onedark.vim'
+Plug 'ayu-theme/ayu-vim'
 
 " file explorer
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
@@ -58,7 +60,9 @@ let mapleader = " "
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 set termguicolors "enable true colors support
-colorscheme onedark
+" colorscheme onedark
+let ayucolor="mirage"
+colorscheme ayu
 
 " Give the active window a blue background and white foreground
 hi StatusLine ctermfg=15 ctermbg=32 cterm=bold
@@ -77,13 +81,19 @@ filetype indent on
 
 syntax on
 
+set exrc
+set nohlsearch
+
 set cursorline
 set wildmenu
 set number
+" set relativenumber
+" set nu
 set hidden
 set updatetime=300
 set nocompatible
 set colorcolumn=80
+set signcolumn=yes
 set showmatch
 set nowrap
 set laststatus=2
@@ -92,6 +102,7 @@ set ignorecase
 set smartcase
 set incsearch
 set noerrorbells visualbell t_vb=
+set scrolloff=8
 
 set completeopt=menuone,noinsert,noselect
 
@@ -101,22 +112,6 @@ set shiftwidth=2
 set softtabstop=2
 set shiftround
 set expandtab
-
-" FZF mappings and custom functions
-nnoremap <silent> <leader>fc :BCommits<CR>
-nnoremap <silent> <leader>fb :Buffers<CR>
-nnoremap <silent> <leader>fr :History<CR>
-nnoremap <silent> <leader>fi :FZF<CR>
-nnoremap <silent> <leader>gr :GFiles<CR>
-nnoremap <silent> <C-p> :GFiles<CR>
-
-" Check if we can load the FZF vim plugin
-if filereadable("/usr/local/opt/fzf/bin/fzf")
-  set rtp+=/usr/local/opt/fzf
-end
-
-" Prettier
-" command! -nargs=0 Prettier :CocCommand prettier.formatFile
 
 " tslime.vim
 let g:tslime_ensure_trailing_newlines = 1 " Always send newline
@@ -130,6 +125,7 @@ nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 nnoremap <leader>fl <cmd>Telescope git_files<cr>
+nnoremap <leader>fs <cmd>Telescope file_browser<cr>
 
 " File explorer
 nnoremap <leader>tt :NvimTreeToggle<CR>
@@ -138,6 +134,15 @@ nnoremap <leader>tn :NvimTreeFindFile<CR>
 
 
 """""""""""Language Settings"""""""""""
+
+" Ale
+let g:ale_fixers = {
+      \  'javascript': ['eslint'],
+      \  'javascript.jsx': ['eslint'],
+      \  'typescript': ['eslint'],
+      \  'typescriptreact': ['eslint'] 
+      \}
+let g:ale_fix_on_save = 1
 
 
 " Racket
