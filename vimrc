@@ -51,6 +51,8 @@ call plug#end()
 " You can move anywhere!!!
 " set virtualedit=all
 
+let mapleader = " "
+
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 set termguicolors "enable true colors support
