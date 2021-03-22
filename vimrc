@@ -18,6 +18,7 @@ Plug 'mattn/emmet-vim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'preservim/nerdcommenter'
 Plug 'JuliaEditorSupport/julia-vim'
+
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 " Theme
@@ -38,8 +39,6 @@ Plug 'scalameta/nvim-metals'
 
 Plug 'tjdevries/nlua.nvim'
 Plug 'euclidianAce/BetterLua.vim'
-" luapad - Danger
-Plug 'rafcamlet/nvim-luapad'
 
 " debuggger
 Plug 'mfussenegger/nvim-dap'
@@ -48,6 +47,7 @@ Plug 'mfussenegger/nvim-dap'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-fzy-native.nvim'
 
 call plug#end()
 
@@ -241,12 +241,25 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
     }
   end
 
+  require('nlua.lsp.nvim').setup(require('lspconfig'), {
+    on_attach = on_attach,
+
+    -- Include globals you want to tell the LSP are real :)
+    globals = {
+      -- Colorbuddy
+      "Color", "c", "Group", "g", "s",
+    }
+  })
+
+
+
   cmd = vim.cmd
 
   cmd [[augroup lsp]]
   cmd [[au!]]
   cmd [[au FileType scala,sbt lua require("metals").initialize_or_attach(metals_config)]]
   cmd [[augroup end]]
+
 
   metals_config = require'metals'.bare_config
   metals_config.settings = {
@@ -258,6 +271,17 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
     }
   }
 
+  metals_config.on_attach = function()
+    require'completion'.on_attach();
+
+    metals_config.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+    vim.lsp.diagnostic.on_publish_diagnostics, {
+      virtual_text = {
+        prefix = '',
+      }
+    }
+  )
+  end
 
   local dap = require('dap')
   dap.configurations.scala = {
@@ -293,6 +317,10 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
       enable = true
     },
   }
+
+  -- telescope fzy
+  -- require('telescope').load_extension('fzy_native')
+
 EOF
 
 " Completion
