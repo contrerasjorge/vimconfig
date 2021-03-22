@@ -55,7 +55,9 @@ call plug#end()
 " You can move anywhere!!!
 " set virtualedit=all
 
+
 let mapleader = " "
+"nnoremap <leader>ev :vsplit $MYVIMRC<cr>
 
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
@@ -86,9 +88,9 @@ set nohlsearch
 
 set cursorline
 set wildmenu
-set number
-" set relativenumber
-" set nu
+" set number
+set relativenumber
+set nu
 set hidden
 set updatetime=300
 set nocompatible
@@ -167,6 +169,17 @@ augroup ft_c
   au Filetype c setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
   au Filetype c setlocal cinoptions=l1,t0,g0 " This fixes weird indentation of switch/case
 augroup END
+
+let g:neoformat_cpp_clangformat = {
+    \ 'exe': 'clang-format',
+    \ 'args': ['--style="{IndentWidth: 4, BraceBreakingStyle: Stroustrup}"']
+\}
+let g:neoformat_c_clangformat = {
+    \ 'exe': 'clang-format',
+    \ 'args': ['--style="{IndentWidth: 4, BraceBreakingStyle: Stroustrup}"']
+\}
+let g:neoformat_enabled_cpp = ['clangformat']
+let g:neoformat_enabled_c = ['clangformat']
 
 augroup fmt
   autocmd!
@@ -250,6 +263,11 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
       "Color", "c", "Group", "g", "s",
     }
   })
+
+  require'lspconfig'.clangd.setup {
+    on_attach = on_attach,
+    root_dir = function() return vim.loop.cwd() end
+  }
 
 
 
