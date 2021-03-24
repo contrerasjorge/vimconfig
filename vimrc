@@ -1,5 +1,6 @@
 call plug#begin('~/.vim/plugged')
 
+Plug 'ThePrimeagen/vim-be-good'
 Plug 'w0rp/ale'
 Plug 'sbdchd/neoformat'
 Plug 'jiangmiao/auto-pairs'
@@ -24,6 +25,9 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 " Theme
 Plug 'joshdick/onedark.vim'
 Plug 'ayu-theme/ayu-vim'
+Plug 'morhetz/gruvbox'
+Plug 'sainnhe/gruvbox-material'
+
 
 " file explorer
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
@@ -35,13 +39,10 @@ Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-lua/completion-nvim'
 " Extensions to built-in LSP, provides type inlay hints
 Plug 'nvim-lua/lsp_extensions.nvim'
-Plug 'scalameta/nvim-metals'
 
+" Lua
 Plug 'tjdevries/nlua.nvim'
 Plug 'euclidianAce/BetterLua.vim'
-
-" debuggger
-Plug 'mfussenegger/nvim-dap'
 
 " For telescope
 Plug 'nvim-lua/popup.nvim'
@@ -49,22 +50,24 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzy-native.nvim'
 
-call plug#end()
+" debuggger
+" Plug 'mfussenegger/nvim-dap'
 
+call plug#end()
 
 " You can move anywhere!!!
 " set virtualedit=all
 
+" Theme
+set termguicolors "enable true colors support
+colorscheme onedark
+"colorscheme gruvbox
+"set background=dark
+"let g:gruvbox_contrast_dark = 'hard'
 
 let mapleader = " "
-"nnoremap <leader>ev :vsplit $MYVIMRC<cr>
 
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
-
-set termguicolors "enable true colors support
-" colorscheme onedark
-let ayucolor="mirage"
-colorscheme ayu
 
 " Give the active window a blue background and white foreground
 hi StatusLine ctermfg=15 ctermbg=32 cterm=bold
@@ -73,7 +76,13 @@ hi SignColumn ctermfg=255 ctermbg=15
 " Highlight search
 hi Search     ctermbg=yellow
 
-set shortmess-=F
+
+" move highlight up and down
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
+" Open and source vimrc file
+nnoremap <silent> <leader>ev :e ~/.vimrc<CR>
+nnoremap <silent> <leader>sv :so ~/.vimrc<CR>
 
 
 syntax enable
@@ -81,11 +90,10 @@ filetype on
 filetype plugin on
 filetype indent on
 
-syntax on
-
+set shortmess-=F
+set shortmess+=c
 set exrc
 set nohlsearch
-
 set cursorline
 set wildmenu
 " set number
@@ -105,7 +113,11 @@ set smartcase
 set incsearch
 set noerrorbells visualbell t_vb=
 set scrolloff=8
-
+" Set completeopt to have a better completion experience
+" :help completeopt
+" menuone: popup even when there's only one match
+" noinsert: Do not insert text until a selection is made
+" noselect: Do not select, force user to select one from the menu
 set completeopt=menuone,noinsert,noselect
 
 " Indenting
@@ -132,7 +144,11 @@ nnoremap <leader>fs <cmd>Telescope file_browser<cr>
 " File explorer
 nnoremap <leader>tt :NvimTreeToggle<CR>
 nnoremap <leader>tr :NvimTreeRefresh<CR>
-nnoremap <leader>tn :NvimTreeFindFile<CR>
+
+" Fugitive
+nnoremap <leader>gs :G<CR>
+nnoremap <leader>gj :diffget //3<CR>
+nnoremap <leader>gf :diffget //2<CR>
 
 
 """""""""""Language Settings"""""""""""
@@ -162,7 +178,7 @@ au BufNewFile,BufRead *.py
     \| set autoindent
     \| set fileformat=unix
 
-" C
+" C & C++
 augroup ft_c
   au!
   au BufNewFile,BufRead *.h setlocal filetype=c
@@ -173,11 +189,11 @@ augroup END
 let g:neoformat_cpp_clangformat = {
     \ 'exe': 'clang-format',
     \ 'args': ['--style="{IndentWidth: 4, BraceBreakingStyle: Stroustrup}"']
-\}
+    \}
 let g:neoformat_c_clangformat = {
     \ 'exe': 'clang-format',
     \ 'args': ['--style="{IndentWidth: 4, BraceBreakingStyle: Stroustrup}"']
-\}
+    \}
 let g:neoformat_enabled_cpp = ['clangformat']
 let g:neoformat_enabled_c = ['clangformat']
 
@@ -269,65 +285,11 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
     root_dir = function() return vim.loop.cwd() end
   }
 
-
-
-  cmd = vim.cmd
-
-  cmd [[augroup lsp]]
-  cmd [[au!]]
-  cmd [[au FileType scala,sbt lua require("metals").initialize_or_attach(metals_config)]]
-  cmd [[augroup end]]
-
-
-  metals_config = require'metals'.bare_config
-  metals_config.settings = {
-    showImplicitArguments = true,
-    showInferredType = true,
-    excludedPackages = {
-      "akka.actor.typed.javadsl",
-      "com.github.swagger.akka.javadsl"
-    }
-  }
-
-  metals_config.on_attach = function()
-    require'completion'.on_attach();
-
-    metals_config.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-    vim.lsp.diagnostic.on_publish_diagnostics, {
-      virtual_text = {
-        prefix = '',
-      }
-    }
-  )
-  end
-
-  local dap = require('dap')
-  dap.configurations.scala = {
-      {
-        type = 'scala',
-        request = 'launch',
-        name = 'Run',
-        metalsRunType = 'run'
-      },
-      {
-        type = 'scala',
-        request = 'launch',
-        name = 'Test File',
-        metalsRunType = 'testFile'
-      },
-      {
-        type = 'scala',
-        request = 'launch',
-        name = 'Test Target',
-        metalsRunType = 'testTarget'
-      }
-    }
-
   -- nvim-dap
-  map('n', '<leader>dtb', '<cmd>lua require"dap".toggle_breakpoint()<CR>')
-  map('n', '<leader>dso', '<cmd>lua require"dap".step_over()<CR>')
-  map('n', '<leader>dsi', '<cmd>lua require"dap".step_into()<CR>')
-  map('n', '<F5>', '<cmd>lua require"dap".continue()<CR>')
+  -- map('n', '<leader>dtb', '<cmd>lua require"dap".toggle_breakpoint()<CR>')
+  -- map('n', '<leader>dso', '<cmd>lua require"dap".step_over()<CR>')
+  -- map('n', '<leader>dsi', '<cmd>lua require"dap".step_into()<CR>')
+  -- map('n', '<F5>', '<cmd>lua require"dap".continue()<CR>')
 
   -- treesitter config
   require('nvim-treesitter.configs').setup {
