@@ -6,3 +6,4 @@
 spell/*
 bundle/vim-fzz
 plugged/*
+.DS_Store
