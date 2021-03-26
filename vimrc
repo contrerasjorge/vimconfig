@@ -1,7 +1,6 @@
 call plug#begin('~/.vim/plugged')
 
 Plug 'w0rp/ale'
-Plug 'sbdchd/neoformat'
 Plug 'jiangmiao/auto-pairs'
 Plug 'vim-airline/vim-airline'
 Plug 'sjl/tslime.vim'
@@ -16,6 +15,7 @@ Plug 'janko-m/vim-test'
 Plug 'mattn/emmet-vim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'preservim/nerdcommenter'
+" Plug 'sbdchd/neoformat'
 " Plug 'JuliaEditorSupport/julia-vim'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -26,11 +26,11 @@ Plug 'ayu-theme/ayu-vim'
 Plug 'gruvbox-community/gruvbox'
 
 
-" file explorer
+" File Explorer
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
 Plug 'kyazdani42/nvim-tree.lua'
 
-" nvim lsp
+" Nvim Lsp
 Plug 'neovim/nvim-lspconfig'
 " Autocompletion framework for built-in LSP
 Plug 'nvim-lua/completion-nvim'
@@ -47,6 +47,10 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzy-native.nvim'
 
+Plug 'rhysd/vim-clang-format'
+Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
+
+
 " debuggger
 " Plug 'mfussenegger/nvim-dap'
 
@@ -56,7 +60,7 @@ call plug#end()
 " set virtualedit=all
 
 " Theme
-"set termguicolors "enable true colors support
+set termguicolors "enable true colors support
 "colorscheme onedark
 let g:gruvbox_contrast_dark = 'hard'
 if exists('+termguicolors')
@@ -143,9 +147,12 @@ nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 nnoremap <leader>fl <cmd>Telescope git_files<cr>
 nnoremap <leader>fs <cmd>Telescope file_browser<cr>
 
-" File explorer
+" Nvim-tree 
 nnoremap <leader>tt :NvimTreeToggle<CR>
 nnoremap <leader>tr :NvimTreeRefresh<CR>
+let g:nvim_tree_side = 'right'
+let g:nvim_tree_add_trailing = 1
+
 
 " Fugitive
 nnoremap <leader>gs :G<CR>
@@ -155,6 +162,7 @@ nnoremap <leader>gf :diffget //2<CR>
 
 """""""""""Language Settings"""""""""""
 
+
 " Ale
 let g:ale_fixers = {
       \  'javascript': ['eslint'],
@@ -163,6 +171,7 @@ let g:ale_fixers = {
       \  'typescriptreact': ['eslint'] 
       \}
 let g:ale_fix_on_save = 1
+
 
 " Go
 augroup ft_golang
@@ -176,6 +185,7 @@ augroup ft_golang
   au Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
   au Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
 augroup END
+
 
 " Rust
 augroup ft_rust
@@ -200,6 +210,7 @@ au BufNewFile,BufRead *.py
     \| set autoindent
     \| set fileformat=unix
 
+
 " C & C++
 augroup ft_c
   au!
@@ -208,19 +219,20 @@ augroup ft_c
   au Filetype c setlocal cinoptions=l1,t0,g0 " This fixes weird indentation of switch/case
 augroup END
 
-let g:neoformat_cpp_clangformat = {
-    \ 'exe': 'clang-format',
-    \ 'args': ['--style="{IndentWidth: 4, BraceBreakingStyle: Stroustrup}"']
-    \}
-let g:neoformat_c_clangformat = {
-    \ 'exe': 'clang-format',
-    \ 'args': ['--style="{IndentWidth: 4, BraceBreakingStyle: Stroustrup}"']
-    \}
-let g:neoformat_enabled_cpp = ['clangformat']
-let g:neoformat_enabled_c = ['clangformat']
+let g:clang_format#style_options = {
+            \ "AccessModifierOffset" : -4,
+            \ "AllowShortIfStatementsOnASingleLine" : "true",
+            \ "AlwaysBreakTemplateDeclarations" : "true",
+            \ "BreakBeforeBraces" : "Stroustrup"
+            \ }
+let g:clang_format#auto_format = 1
+" map to <Leader>cf in C++ code
+autocmd FileType c,cpp,objc nnoremap <buffer><Leader>cf :<C-u>ClangFormat<CR>
+autocmd FileType c,cpp,objc vnoremap <buffer><Leader>cf :ClangFormat<CR>
+
 
 " JS & TS 
-autocmd BufWritePre *.js,*.ts,*.tsx,*.jsx Neoformat
+"autocmd BufWritePre *.js,*.ts,*.tsx,*.jsx Neoformat
 augroup ft_typescript
   au!
 
@@ -228,9 +240,12 @@ augroup ft_typescript
 
   au Filetype typescript setlocal shiftwidth=2 softtabstop=2 expandtab
 augroup END
-autocmd BufWritePre *.css Neoformat
+"autocmd BufWritePre *.css Neoformat
 
-nnoremap <leader>nf :Neoformat<CR>
+
+" Neoformat
+"nnoremap <leader>nf :Neoformat<CR>
+
 
 " JSON color highlighting
 autocmd FileType json syntax match Comment +\/\/.\+$+
