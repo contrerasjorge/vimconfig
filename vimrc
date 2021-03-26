@@ -1,6 +1,5 @@
 call plug#begin('~/.vim/plugged')
 
-Plug 'ThePrimeagen/vim-be-good'
 Plug 'w0rp/ale'
 Plug 'sbdchd/neoformat'
 Plug 'jiangmiao/auto-pairs'
@@ -10,7 +9,6 @@ Plug 'jparise/vim-graphql'
 Plug 'ap/vim-css-color'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'plasticboy/vim-markdown'
-Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-eunuch'
@@ -18,15 +16,14 @@ Plug 'janko-m/vim-test'
 Plug 'mattn/emmet-vim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'preservim/nerdcommenter'
-Plug 'JuliaEditorSupport/julia-vim'
+" Plug 'JuliaEditorSupport/julia-vim'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 " Theme
 Plug 'joshdick/onedark.vim'
 Plug 'ayu-theme/ayu-vim'
-Plug 'morhetz/gruvbox'
-Plug 'sainnhe/gruvbox-material'
+Plug 'gruvbox-community/gruvbox'
 
 
 " file explorer
@@ -59,11 +56,16 @@ call plug#end()
 " set virtualedit=all
 
 " Theme
-set termguicolors "enable true colors support
-colorscheme onedark
-"colorscheme gruvbox
-"set background=dark
-"let g:gruvbox_contrast_dark = 'hard'
+"set termguicolors "enable true colors support
+"colorscheme onedark
+let g:gruvbox_contrast_dark = 'hard'
+if exists('+termguicolors')
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+endif
+let g:gruvbox_invert_selection='0'
+colorscheme gruvbox
+set background=dark
 
 let mapleader = " "
 
@@ -162,6 +164,26 @@ let g:ale_fixers = {
       \}
 let g:ale_fix_on_save = 1
 
+" Go
+augroup ft_golang
+  au!
+
+  au BufEnter,BufNewFile,BufRead *.go setlocal formatoptions+=roq
+  au BufEnter,BufNewFile,BufRead *.go setlocal noexpandtab shiftwidth=4 tabstop=4 softtabstop=4 nolist
+  au BufEnter,BufNewFile,BufRead *.tmpl setlocal filetype=html
+
+  au Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
+  au Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
+  au Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
+augroup END
+
+" Rust
+augroup ft_rust
+  au!
+  au BufEnter,BufNewFile,BufRead *.rs :compiler cargo
+  au FileType rust set nolist
+augroup END
+
 
 " Racket
 au BufEnter,BufNewFile,BufRead *.rkt set filetype=racket
@@ -197,10 +219,18 @@ let g:neoformat_c_clangformat = {
 let g:neoformat_enabled_cpp = ['clangformat']
 let g:neoformat_enabled_c = ['clangformat']
 
-augroup fmt
-  autocmd!
-  autocmd BufWritePre * undojoin | Neoformat
+" JS & TS 
+autocmd BufWritePre *.js,*.ts,*.tsx,*.jsx Neoformat
+augroup ft_typescript
+  au!
+
+  autocmd BufNewFile,BufRead *.tsx set filetype=typescript
+
+  au Filetype typescript setlocal shiftwidth=2 softtabstop=2 expandtab
 augroup END
+autocmd BufWritePre *.css Neoformat
+
+nnoremap <leader>nf :Neoformat<CR>
 
 " JSON color highlighting
 autocmd FileType json syntax match Comment +\/\/.\+$+
