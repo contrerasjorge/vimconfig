@@ -15,8 +15,8 @@ Plug 'janko-m/vim-test'
 Plug 'mattn/emmet-vim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'preservim/nerdcommenter'
-" Plug 'sbdchd/neoformat'
-" Plug 'JuliaEditorSupport/julia-vim'
+"Plug 'sbdchd/neoformat'
+"Plug 'JuliaEditorSupport/julia-vim'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
@@ -49,6 +49,11 @@ Plug 'nvim-telescope/telescope-fzy-native.nvim'
 
 Plug 'rhysd/vim-clang-format'
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
+
+" Because typescriptreact spacing needs to work!
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
+
 
 
 " debuggger
@@ -225,7 +230,7 @@ let g:clang_format#style_options = {
             \ "AlwaysBreakTemplateDeclarations" : "true",
             \ "BreakBeforeBraces" : "Stroustrup"
             \ }
-let g:clang_format#auto_format = 1
+"let g:clang_format#auto_format = 1
 " map to <Leader>cf in C++ code
 autocmd FileType c,cpp,objc nnoremap <buffer><Leader>cf :<C-u>ClangFormat<CR>
 autocmd FileType c,cpp,objc vnoremap <buffer><Leader>cf :ClangFormat<CR>
@@ -236,10 +241,9 @@ autocmd FileType c,cpp,objc vnoremap <buffer><Leader>cf :ClangFormat<CR>
 augroup ft_typescript
   au!
 
-  autocmd BufNewFile,BufRead *.tsx set filetype=typescript
-
   au Filetype typescript setlocal shiftwidth=2 softtabstop=2 expandtab
 augroup END
+
 "autocmd BufWritePre *.css Neoformat
 
 
