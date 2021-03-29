@@ -15,8 +15,6 @@ Plug 'janko-m/vim-test'
 Plug 'mattn/emmet-vim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'preservim/nerdcommenter'
-"Plug 'sbdchd/neoformat'
-"Plug 'JuliaEditorSupport/julia-vim'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
@@ -24,7 +22,6 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'joshdick/onedark.vim'
 Plug 'ayu-theme/ayu-vim'
 Plug 'gruvbox-community/gruvbox'
-
 
 " File Explorer
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
@@ -54,10 +51,11 @@ Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 Plug 'leafgarland/typescript-vim'
 Plug 'peitalin/vim-jsx-typescript'
 
-
-
+" Lalala 🎶 maybe in the future I'll use 'em
+"Plug 'sbdchd/neoformat'
+"Plug 'JuliaEditorSupport/julia-vim'
 " debuggger
-" Plug 'mfussenegger/nvim-dap'
+"Plug 'mfussenegger/nvim-dap'
 
 call plug#end()
 
@@ -189,6 +187,7 @@ augroup ft_golang
   au Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
   au Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
   au Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
+
 augroup END
 
 
@@ -311,6 +310,37 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
 
   end
 
+  -- Go imports
+  function goimports(timeoutms)
+    local context = { source = { organizeImports = true } }
+    vim.validate { context = { context, "t", true } }
+
+    local params = vim.lsp.util.make_range_params()
+    params.context = context
+
+    -- See the implementation of the textDocument/codeAction callback
+    -- (lua/vim/lsp/handler.lua) for how to do this properly.
+    local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, timeout_ms)
+    if not result or next(result) == nil then return end
+    local actions = result[1].result
+    if not actions then return end
+    local action = actions[1]
+
+    -- textDocument/codeAction can return either Command[] or CodeAction[]. If it
+    -- is a CodeAction, it can have either an edit, a command or both. Edits
+    -- should be executed first.
+    if action.edit or type(action.command) == "table" then
+      if action.edit then
+        vim.lsp.util.apply_workspace_edit(action.edit)
+      end
+      if type(action.command) == "table" then
+        vim.lsp.buf.execute_command(action.command)
+      end
+    else
+      vim.lsp.buf.execute_command(action)
+    end
+  end
+
 
   local servers = {'pyright', 'gopls', 'rust_analyzer', 'tsserver'}
   for _, lsp in ipairs(servers) do
@@ -357,3 +387,4 @@ let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
+autocmd BufWritePre *.go lua goimports(1000)
