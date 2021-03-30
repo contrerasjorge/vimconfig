@@ -2,7 +2,6 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'w0rp/ale'
 Plug 'jiangmiao/auto-pairs'
-Plug 'vim-airline/vim-airline'
 Plug 'sjl/tslime.vim'
 Plug 'jparise/vim-graphql'
 Plug 'ap/vim-css-color'
@@ -15,6 +14,8 @@ Plug 'janko-m/vim-test'
 Plug 'mattn/emmet-vim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 Plug 'preservim/nerdcommenter'
+
+Plug 'lewis6991/gitsigns.nvim'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
@@ -77,10 +78,6 @@ set background=dark
 let mapleader = " "
 
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
-
-" Give the active window a blue background and white foreground
-hi StatusLine ctermfg=15 ctermbg=32 cterm=bold
-hi SignColumn ctermfg=255 ctermbg=15
 
 " Highlight search
 hi Search     ctermbg=yellow
@@ -259,6 +256,7 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 :lua << EOF
   local nvim_lsp = require('lspconfig')
+  require('gitsigns').setup()
 
   local function opt(scope, key, value)
     local scopes = {o = vim.o, b = vim.bo, w = vim.wo}
