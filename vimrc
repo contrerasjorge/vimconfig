@@ -6,7 +6,8 @@ Plug 'sjl/tslime.vim'
 Plug 'jparise/vim-graphql'
 Plug 'ap/vim-css-color'
 Plug 'christoomey/vim-tmux-navigator'
-Plug 'plasticboy/vim-markdown'
+"Plug 'plasticboy/vim-markdown'
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-eunuch'
@@ -139,7 +140,6 @@ let g:tslime_normal_mapping = '<leader>sl'
 let g:tslime_visual_mapping = '<leader>sl'
 
 " Telescope
-" Find files using Telescope command-line sugar.
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
@@ -158,6 +158,10 @@ let g:nvim_tree_add_trailing = 1
 nnoremap <leader>gs :G<CR>
 nnoremap <leader>gj :diffget //3<CR>
 nnoremap <leader>gf :diffget //2<CR>
+
+
+" Markdown Preview
+nmap <C-s> <Plug>MarkdownPreviewToggle
 
 
 """""""""""Language Settings"""""""""""
@@ -201,7 +205,7 @@ au BufEnter,BufNewFile,BufRead *.rkt set filetype=racket
 
 
 " Python
-autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
+"autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
 au BufNewFile,BufRead *.py
     \| set tabstop=4
     \| set softtabstop=4
