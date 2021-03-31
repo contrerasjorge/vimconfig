@@ -1,7 +1,8 @@
 call plug#begin('~/.vim/plugged')
 
 Plug 'w0rp/ale'
-Plug 'jiangmiao/auto-pairs'
+"Plug 'jiangmiao/auto-pairs'
+Plug 'windwp/nvim-autopairs'
 Plug 'sjl/tslime.vim'
 Plug 'jparise/vim-graphql'
 Plug 'ap/vim-css-color'
@@ -32,9 +33,17 @@ Plug 'kyazdani42/nvim-tree.lua'
 " Nvim Lsp
 Plug 'neovim/nvim-lspconfig'
 " Autocompletion framework for built-in LSP
-Plug 'nvim-lua/completion-nvim'
+"Plug 'nvim-lua/completion-nvim'
 " Extensions to built-in LSP, provides type inlay hints
 Plug 'nvim-lua/lsp_extensions.nvim'
+Plug 'scalameta/nvim-metals'
+
+Plug 'hrsh7th/nvim-compe'
+
+" Snippets
+"Plug 'hrsh7th/vim-vsnip'
+"Plug 'hrsh7th/vim-vsnip-integ'
+
 
 " Lua
 Plug 'tjdevries/nlua.nvim'
@@ -57,7 +66,7 @@ Plug 'peitalin/vim-jsx-typescript'
 "Plug 'sbdchd/neoformat'
 "Plug 'JuliaEditorSupport/julia-vim'
 " debuggger
-"Plug 'mfussenegger/nvim-dap'
+Plug 'mfussenegger/nvim-dap'
 
 call plug#end()
 
@@ -261,6 +270,8 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
 :lua << EOF
   local nvim_lsp = require('lspconfig')
   require('gitsigns').setup()
+  require('nvim-autopairs').setup()
+  
 
   local function opt(scope, key, value)
     local scopes = {o = vim.o, b = vim.bo, w = vim.wo}
@@ -278,8 +289,31 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
     vim.api.nvim_set_keymap(mode, lhs, rhs, options)
   end
 
+  require'compe'.setup {
+    enabled = true;
+    autocomplete = true;
+    debug = false;
+    min_length = 1;
+    preselect = 'enable';
+    throttle_time = 80;
+    source_timeout = 200;
+    incomplete_delay = 400;
+    allow_prefix_unmatch = false;
+
+    source = {
+      path = true;
+      buffer = true;
+      calc = true;
+      vsnip = true;
+      nvim_lsp = true;
+      nvim_lua = true;
+      spell = true;
+      tags = true;
+      snippets_nvim = true;
+    };
+  }
+
   local on_attach = function(client, bufnr)
-    require('completion').on_attach()
 
     local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
     local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
@@ -366,11 +400,68 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
     root_dir = function() return vim.loop.cwd() end
   }
 
+  cmd = vim.cmd
+
+  cmd [[augroup lsp]]
+  cmd [[au!]]
+  cmd [[au FileType scala,sbt lua require("metals").initialize_or_attach(metals_config)]]
+  cmd [[augroup end]]
+
+
+  metals_config = require'metals'.bare_config
+  metals_config.settings = {
+    showImplicitArguments = true,
+    showInferredType = true,
+    excludedPackages = {
+      "akka.actor.typed.javadsl",
+      "com.github.swagger.akka.javadsl"
+    }
+  }
+
+  metals_config.init_options.statusBarProvider = "on"
+  metals_config.handlers["textDocument/publishDiagnostics"] = shared_diagnostic_settings
+  metals_config.capabilities = capabilities
+
+  local dap = require('dap')
+  dap.configurations.scala = {
+      {
+        type = 'scala',
+        request = 'launch',
+        name = 'Run',
+        metalsRunType = 'run'
+      },
+      {
+        type = 'scala',
+        request = 'launch',
+        name = 'Test File',
+        metalsRunType = 'testFile'
+      },
+      {
+        type = 'scala',
+        request = 'launch',
+        name = 'Test Target',
+        metalsRunType = 'testTarget'
+      }
+    }
+
+  metals_config.on_attach = function()
+    require'metals'.setup_dap()
+
+    metals_config.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+    vim.lsp.diagnostic.on_publish_diagnostics, {
+      virtual_text = {
+        prefix = '',
+      }
+    }
+  )
+  end
+
+
   -- nvim-dap
-  -- map('n', '<leader>dtb', '<cmd>lua require"dap".toggle_breakpoint()<CR>')
-  -- map('n', '<leader>dso', '<cmd>lua require"dap".step_over()<CR>')
-  -- map('n', '<leader>dsi', '<cmd>lua require"dap".step_into()<CR>')
-  -- map('n', '<F5>', '<cmd>lua require"dap".continue()<CR>')
+  map('n', '<F5>', '<cmd>lua require"dap".continue()<CR>')
+  map('n', '<leader>dtb', '<cmd>lua require"dap".toggle_breakpoint()<CR>')
+  map('n', '<leader>dso', '<cmd>lua require"dap".step_over()<CR>')
+  map('n', '<leader>dsi', '<cmd>lua require"dap".step_into()<CR>')
 
   -- treesitter config
   require('nvim-treesitter.configs').setup {
