@@ -1,13 +1,11 @@
 call plug#begin('~/.vim/plugged')
 
 Plug 'w0rp/ale'
-"Plug 'jiangmiao/auto-pairs'
 Plug 'windwp/nvim-autopairs'
 Plug 'sjl/tslime.vim'
 Plug 'jparise/vim-graphql'
 Plug 'ap/vim-css-color'
 Plug 'christoomey/vim-tmux-navigator'
-"Plug 'plasticboy/vim-markdown'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
@@ -61,6 +59,8 @@ Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 " Because typescriptreact spacing needs to work!
 Plug 'leafgarland/typescript-vim'
 Plug 'peitalin/vim-jsx-typescript'
+"Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
+"Plug 'jparise/vim-graphql'
 
 " Lalala 🎶 maybe in the future I'll use 'em
 "Plug 'sbdchd/neoformat'
@@ -75,15 +75,15 @@ call plug#end()
 
 " Theme
 set termguicolors "enable true colors support
-"colorscheme onedark
-let g:gruvbox_contrast_dark = 'hard'
+colorscheme onedark
+"let g:gruvbox_contrast_dark = 'hard'
 if exists('+termguicolors')
   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 endif
-let g:gruvbox_invert_selection='0'
-colorscheme gruvbox
-set background=dark
+"let g:gruvbox_invert_selection='0'
+"colorscheme gruvbox
+"set background=dark
 
 let mapleader = " "
 
@@ -171,6 +171,12 @@ nnoremap <leader>gf :diffget //2<CR>
 
 " Markdown Preview
 nmap <C-s> <Plug>MarkdownPreviewToggle
+
+
+" Copy and stuff
+nnoremap <leader>y "+y
+vnoremap <leader>y "+y
+nnoremap <leader>V gg"+yG
 
 
 """""""""""Language Settings"""""""""""
@@ -378,7 +384,7 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
   end
 
 
-  local servers = {'pyright', 'gopls', 'rust_analyzer', 'tsserver'}
+  local servers = {'cssls', 'html', 'pyright', 'gopls', 'rust_analyzer', 'tsserver'}
   for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup {
       on_attach = on_attach,
