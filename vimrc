@@ -23,6 +23,7 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'joshdick/onedark.vim'
 Plug 'ayu-theme/ayu-vim'
 Plug 'gruvbox-community/gruvbox'
+Plug 'Matsuuu/pinkmare'
 
 " File Explorer
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
@@ -90,7 +91,7 @@ let mapleader = " "
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 " Highlight search
-hi Search     ctermbg=yellow
+"hi Search     ctermbg=yellow
 
 
 " move highlight up and down
@@ -155,6 +156,10 @@ nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 nnoremap <leader>fl <cmd>Telescope git_files<cr>
 nnoremap <leader>fs <cmd>Telescope file_browser<cr>
+nnoremap <leader>fd <cmd>Telescope lsp_workspace_diagnostics<cr>
+nnoremap <leader>fp <cmd>Telescope oldfiles<cr>
+" 一番の大事な設定
+nnoremap <leader>fc <cmd>Telescope colorscheme<cr>
 
 " Nvim-tree 
 nnoremap <leader>tt :NvimTreeToggle<CR>
