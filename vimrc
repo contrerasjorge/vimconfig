@@ -1,9 +1,9 @@
 call plug#begin('~/.vim/plugged')
 
-Plug 'w0rp/ale'
+"Plug 'w0rp/ale'
 Plug 'windwp/nvim-autopairs'
 Plug 'sjl/tslime.vim'
-Plug 'jparise/vim-graphql'
+"Plug 'jparise/vim-graphql'
 Plug 'ap/vim-css-color'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
@@ -19,11 +19,12 @@ Plug 'lewis6991/gitsigns.nvim'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
-" Theme
+" Themes
 Plug 'joshdick/onedark.vim'
 Plug 'ayu-theme/ayu-vim'
 Plug 'gruvbox-community/gruvbox'
 Plug 'Matsuuu/pinkmare'
+Plug 'colepeters/spacemacs-theme.vim'
 
 " File Explorer
 Plug 'kyazdani42/nvim-web-devicons' " for file icons
@@ -38,11 +39,6 @@ Plug 'nvim-lua/lsp_extensions.nvim'
 Plug 'scalameta/nvim-metals'
 
 Plug 'hrsh7th/nvim-compe'
-
-" Snippets
-"Plug 'hrsh7th/vim-vsnip'
-"Plug 'hrsh7th/vim-vsnip-integ'
-
 
 " Lua
 Plug 'tjdevries/nlua.nvim'
@@ -63,11 +59,16 @@ Plug 'peitalin/vim-jsx-typescript'
 "Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 "Plug 'jparise/vim-graphql'
 
+" debuggger
+Plug 'mfussenegger/nvim-dap'
+
 " Lalala 🎶 maybe in the future I'll use 'em
 "Plug 'sbdchd/neoformat'
 "Plug 'JuliaEditorSupport/julia-vim'
-" debuggger
-Plug 'mfussenegger/nvim-dap'
+
+" Snippets
+"Plug 'hrsh7th/vim-vsnip'
+"Plug 'hrsh7th/vim-vsnip-integ'
 
 call plug#end()
 
@@ -82,6 +83,7 @@ if exists('+termguicolors')
   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 endif
+let ayucolor="mirage"
 "let g:gruvbox_invert_selection='0'
 "colorscheme gruvbox
 "set background=dark
@@ -166,6 +168,7 @@ nnoremap <leader>tt :NvimTreeToggle<CR>
 nnoremap <leader>tr :NvimTreeRefresh<CR>
 let g:nvim_tree_side = 'right'
 let g:nvim_tree_add_trailing = 1
+let g:nvim_tree_quit_on_open = 1
 
 
 " Fugitive
@@ -188,13 +191,13 @@ nnoremap <leader>V gg"+yG
 
 
 " Ale
-let g:ale_fixers = {
-      \  'javascript': ['eslint'],
-      \  'javascript.jsx': ['eslint'],
-      \  'typescript': ['eslint'],
-      \  'typescriptreact': ['eslint'] 
-      \}
-let g:ale_fix_on_save = 1
+"let g:ale_fixers = {
+      "\  'javascript': ['eslint'],
+      "\  'javascript.jsx': ['eslint'],
+      "\  'typescript': ['eslint'],
+      "\  'typescriptreact': ['eslint'] 
+      "\}
+"let g:ale_fix_on_save = 1
 
 
 " Go
@@ -389,7 +392,7 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
   end
 
 
-  local servers = {'cssls', 'html', 'pyright', 'gopls', 'rust_analyzer', 'tsserver'}
+  local servers = {'diagnosticls', 'cssls', 'html', 'pyright', 'gopls', 'rust_analyzer', 'tsserver'}
   for _, lsp in ipairs(servers) do
     nvim_lsp[lsp].setup {
       on_attach = on_attach,
@@ -405,6 +408,50 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
       "Color", "c", "Group", "g", "s",
     }
   })
+
+  require'lspconfig'.diagnosticls.setup {
+    filetypes = {"javascript", "javascriptreact", "typescript", "typescriptreact", "css"},
+    init_options = {
+      filetypes = {
+        javascript = "eslint",
+        typescript = "eslint",
+        javascriptreact = "eslint",
+        typescriptreact = "eslint"
+      },
+      linters = {
+        eslint = {
+          sourceName = "eslint",
+          command = "./node_modules/.bin/eslint",
+          rootPatterns = {
+          ".eslitrc.json",
+          "package.json"
+        },
+        debounce = 100,
+        args = {
+          "--cache",
+          "--stdin",
+          "--stdin-filename",
+          "%filepath",
+          "--format",
+          "json"
+        },
+        parseJson = {
+          errorsRoot = "[0].messages",
+          line = "line",
+          column = "column",
+          endLine = "endLine",
+          endColumn = "endColumn",
+          message = "${message} [${ruleId}]",
+          security = "severity"
+        },
+        securities = {
+            [2] = "error",
+            [1] = "warning"
+          }
+        }
+      }
+    }
+  }
 
   require'lspconfig'.clangd.setup {
     on_attach = on_attach,
@@ -482,7 +529,7 @@ autocmd FileType json syntax match Comment +\/\/.\+$+
   }
 
   -- telescope fzy
-  -- require('telescope').load_extension('fzy_native')
+  require('telescope').load_extension('fzy_native')
 
 EOF
 
