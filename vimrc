@@ -1,6 +1,5 @@
 call plug#begin('~/.vim/plugged')
 
-"Plug 'w0rp/ale'
 Plug 'windwp/nvim-autopairs'
 Plug 'sjl/tslime.vim'
 "Plug 'jparise/vim-graphql'
@@ -51,19 +50,18 @@ Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-telescope/telescope-fzy-native.nvim'
 
 Plug 'rhysd/vim-clang-format'
-Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 
 " Because typescriptreact spacing needs to work!
 Plug 'leafgarland/typescript-vim'
 Plug 'peitalin/vim-jsx-typescript'
 "Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 "Plug 'jparise/vim-graphql'
+Plug 'jose-elias-alvarez/nvim-lsp-ts-utils'
 
 " debuggger
 Plug 'mfussenegger/nvim-dap'
 
 " Lalala 🎶 maybe in the future I'll use 'em
-"Plug 'sbdchd/neoformat'
 "Plug 'JuliaEditorSupport/julia-vim'
 
 " Snippets
@@ -72,29 +70,24 @@ Plug 'mfussenegger/nvim-dap'
 
 call plug#end()
 
+lua require("lsp-config")
+
 " You can move anywhere!!!
 " set virtualedit=all
 
-" Theme
+" Theme Stuff
 set termguicolors "enable true colors support
 colorscheme onedark
-"let g:gruvbox_contrast_dark = 'hard'
+let g:gruvbox_contrast_dark = 'hard'
 if exists('+termguicolors')
   let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
   let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 endif
 let ayucolor="mirage"
-"let g:gruvbox_invert_selection='0'
-"colorscheme gruvbox
-"set background=dark
 
 let mapleader = " "
 
 autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
-
-" Highlight search
-"hi Search     ctermbg=yellow
-
 
 " move highlight up and down
 vnoremap J :m '>+1<CR>gv=gv
@@ -102,6 +95,8 @@ vnoremap K :m '<-2<CR>gv=gv
 " Open and source vimrc file
 nnoremap <silent> <leader>ev :e ~/.vimrc<CR>
 nnoremap <silent> <leader>sv :so ~/.vimrc<CR>
+nnoremap <silent> <leader>s; :luafile % ~/.vim/lua/lsp-config.lua<CR>
+nnoremap <silent> <leader>e; :e ~/.vim/lua/lsp-config.lua<CR>
 
 
 syntax enable
@@ -190,16 +185,6 @@ nnoremap <leader>V gg"+yG
 """""""""""Language Settings"""""""""""
 
 
-" Ale
-"let g:ale_fixers = {
-      "\  'javascript': ['eslint'],
-      "\  'javascript.jsx': ['eslint'],
-      "\  'typescript': ['eslint'],
-      "\  'typescriptreact': ['eslint'] 
-      "\}
-"let g:ale_fix_on_save = 1
-
-
 " Go
 augroup ft_golang
   au!
@@ -267,275 +252,7 @@ augroup ft_typescript
   au Filetype typescript setlocal shiftwidth=2 softtabstop=2 expandtab
 augroup END
 
-"autocmd BufWritePre *.css Neoformat
-
-
-" Neoformat
-"nnoremap <leader>nf :Neoformat<CR>
-
-
 " JSON color highlighting
 autocmd FileType json syntax match Comment +\/\/.\+$+
-
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" LSP
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-:lua << EOF
-  local nvim_lsp = require('lspconfig')
-  require('gitsigns').setup()
-  require('nvim-autopairs').setup()
-  
-
-  local function opt(scope, key, value)
-    local scopes = {o = vim.o, b = vim.bo, w = vim.wo}
-    scopes[scope][key] = value
-    if scope ~= 'o' then
-      scopes['o'][key] = value
-    end
-  end
-
-  local function map(mode, lhs, rhs, opts)
-    local options = {noremap = true, silent = true}
-    if opts then
-      options = vim.tbl_extend('force', options, opts)
-    end
-    vim.api.nvim_set_keymap(mode, lhs, rhs, options)
-  end
-
-  require'compe'.setup {
-    enabled = true;
-    autocomplete = true;
-    debug = false;
-    min_length = 1;
-    preselect = 'enable';
-    throttle_time = 80;
-    source_timeout = 200;
-    incomplete_delay = 400;
-    allow_prefix_unmatch = false;
-
-    source = {
-      path = true;
-      buffer = true;
-      calc = true;
-      vsnip = true;
-      nvim_lsp = true;
-      nvim_lua = true;
-      spell = true;
-      tags = true;
-      snippets_nvim = true;
-    };
-  }
-
-  local on_attach = function(client, bufnr)
-
-    local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
-    local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
-
-    buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-    -- Mappings
-    local opts = { noremap=true, silent=true }
-    buf_set_keymap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-    buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
-    buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
-    buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-    buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-    buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-    buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-    buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-    buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-    buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-    buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-    buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-    buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-    buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-    buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-
-    if client.resolved_capabilities.document_formatting then
-        buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
-    elseif client.resolved_capabilities.document_range_formatting then
-        buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
-    end
-
-  end
-
-  -- Go imports
-  function goimports(timeoutms)
-    local context = { source = { organizeImports = true } }
-    vim.validate { context = { context, "t", true } }
-
-    local params = vim.lsp.util.make_range_params()
-    params.context = context
-
-    -- See the implementation of the textDocument/codeAction callback
-    -- (lua/vim/lsp/handler.lua) for how to do this properly.
-    local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, timeout_ms)
-    if not result or next(result) == nil then return end
-    local actions = result[1].result
-    if not actions then return end
-    local action = actions[1]
-
-    -- textDocument/codeAction can return either Command[] or CodeAction[]. If it
-    -- is a CodeAction, it can have either an edit, a command or both. Edits
-    -- should be executed first.
-    if action.edit or type(action.command) == "table" then
-      if action.edit then
-        vim.lsp.util.apply_workspace_edit(action.edit)
-      end
-      if type(action.command) == "table" then
-        vim.lsp.buf.execute_command(action.command)
-      end
-    else
-      vim.lsp.buf.execute_command(action)
-    end
-  end
-
-
-  local servers = {'diagnosticls', 'cssls', 'html', 'pyright', 'gopls', 'rust_analyzer', 'tsserver'}
-  for _, lsp in ipairs(servers) do
-    nvim_lsp[lsp].setup {
-      on_attach = on_attach,
-    }
-  end
-
-  require('nlua.lsp.nvim').setup(require('lspconfig'), {
-    on_attach = on_attach,
-
-    -- Include globals you want to tell the LSP are real :)
-    globals = {
-      -- Colorbuddy
-      "Color", "c", "Group", "g", "s",
-    }
-  })
-
-  require'lspconfig'.diagnosticls.setup {
-    filetypes = {"javascript", "javascriptreact", "typescript", "typescriptreact", "css"},
-    init_options = {
-      filetypes = {
-        javascript = "eslint",
-        typescript = "eslint",
-        javascriptreact = "eslint",
-        typescriptreact = "eslint"
-      },
-      linters = {
-        eslint = {
-          sourceName = "eslint",
-          command = "./node_modules/.bin/eslint",
-          rootPatterns = {
-          ".eslitrc.json",
-          "package.json"
-        },
-        debounce = 100,
-        args = {
-          "--cache",
-          "--stdin",
-          "--stdin-filename",
-          "%filepath",
-          "--format",
-          "json"
-        },
-        parseJson = {
-          errorsRoot = "[0].messages",
-          line = "line",
-          column = "column",
-          endLine = "endLine",
-          endColumn = "endColumn",
-          message = "${message} [${ruleId}]",
-          security = "severity"
-        },
-        securities = {
-            [2] = "error",
-            [1] = "warning"
-          }
-        }
-      }
-    }
-  }
-
-  require'lspconfig'.clangd.setup {
-    on_attach = on_attach,
-    root_dir = function() return vim.loop.cwd() end
-  }
-
-  cmd = vim.cmd
-
-  cmd [[augroup lsp]]
-  cmd [[au!]]
-  cmd [[au FileType scala,sbt lua require("metals").initialize_or_attach(metals_config)]]
-  cmd [[augroup end]]
-
-
-  metals_config = require'metals'.bare_config
-  metals_config.settings = {
-    showImplicitArguments = true,
-    showInferredType = true,
-    excludedPackages = {
-      "akka.actor.typed.javadsl",
-      "com.github.swagger.akka.javadsl"
-    }
-  }
-
-  metals_config.init_options.statusBarProvider = "on"
-  metals_config.handlers["textDocument/publishDiagnostics"] = shared_diagnostic_settings
-  metals_config.capabilities = capabilities
-
-  local dap = require('dap')
-  dap.configurations.scala = {
-      {
-        type = 'scala',
-        request = 'launch',
-        name = 'Run',
-        metalsRunType = 'run'
-      },
-      {
-        type = 'scala',
-        request = 'launch',
-        name = 'Test File',
-        metalsRunType = 'testFile'
-      },
-      {
-        type = 'scala',
-        request = 'launch',
-        name = 'Test Target',
-        metalsRunType = 'testTarget'
-      }
-    }
-
-  metals_config.on_attach = function()
-    require'metals'.setup_dap()
-
-    metals_config.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-    vim.lsp.diagnostic.on_publish_diagnostics, {
-      virtual_text = {
-        prefix = '',
-      }
-    }
-  )
-  end
-
-
-  -- nvim-dap
-  map('n', '<F5>', '<cmd>lua require"dap".continue()<CR>')
-  map('n', '<leader>dtb', '<cmd>lua require"dap".toggle_breakpoint()<CR>')
-  map('n', '<leader>dso', '<cmd>lua require"dap".step_over()<CR>')
-  map('n', '<leader>dsi', '<cmd>lua require"dap".step_into()<CR>')
-
-  -- treesitter config
-  require('nvim-treesitter.configs').setup {
-    highlight = {
-      enable = true
-    },
-  }
-
-  -- telescope fzy
-  require('telescope').load_extension('fzy_native')
-
-EOF
-
-" Completion
-let g:completion_matching_strategy_list = ['exact', 'substring', 'fuzzy']
-inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 autocmd BufWritePre *.go lua goimports(1000)

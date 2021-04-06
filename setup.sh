@@ -1,11 +1,9 @@
-#!/bin/sh
+#!/bin/bash
+mkdir -p ~/.config/nvim/plugin
+mkdir -p ~/.config/nvim/after/plugin
+mkdir -p ~/.config/nvim/lua
 
-set -ex
-
-ln -s ~/.vim/vimrc ~/.vimrc
-
-mkdir -p ~/.config/nvim
-ln -s ~/.vim/nvim_init.vim ~/.config/nvim/init.vim
-
-mkdir -p ~/.vim/tmp/undo
-mkdir -p ~/.vim/tmp/backup
+for f in `find . -regex ".*\.vim$\|.*\.lua$"`; do
+    rm -rf ~/.config/nvim/$f
+    ln -s ~/.vim/$f ~/.config/nvim/$f
+  done
