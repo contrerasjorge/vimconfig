@@ -97,6 +97,7 @@ nnoremap <silent> <leader>ev :e ~/.vimrc<CR>
 nnoremap <silent> <leader>sv :so ~/.vimrc<CR>
 nnoremap <silent> <leader>s; :luafile % ~/.vim/lua/lsp-config.lua<CR>
 nnoremap <silent> <leader>e; :e ~/.vim/lua/lsp-config.lua<CR>
+nnoremap <silent> <leader>lu :luafile %<CR>
 
 
 syntax enable
