@@ -1,8 +1,8 @@
 call plug#begin('~/.vim/plugged')
 
+"Plug 'dense-analysis/ale'
 Plug 'windwp/nvim-autopairs'
 Plug 'sjl/tslime.vim'
-"Plug 'jparise/vim-graphql'
 Plug 'ap/vim-css-color'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
@@ -182,6 +182,15 @@ nnoremap <leader>y "+y
 vnoremap <leader>y "+y
 nnoremap <leader>V gg"+yG
 
+"let g:ale_linters = {
+      "\   'python': ['flake8', 'pylint'],
+      "\}
+"let g:ale_fixers = {
+      "\    'python': ['yapf'],
+      "\}
+"nmap <F10> :ALEFix<CR>
+"let g:ale_fix_on_save = 1
+
 
 """""""""""Language Settings"""""""""""
 
@@ -199,6 +208,8 @@ augroup ft_golang
   au Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
 
 augroup END
+
+autocmd BufWritePre *.go lua goimports(1000)
 
 
 " Rust
@@ -246,7 +257,6 @@ autocmd FileType c,cpp,objc vnoremap <buffer><Leader>cf :ClangFormat<CR>
 
 
 " JS & TS 
-"autocmd BufWritePre *.js,*.ts,*.tsx,*.jsx Neoformat
 augroup ft_typescript
   au!
 
@@ -256,4 +266,3 @@ augroup END
 " JSON color highlighting
 autocmd FileType json syntax match Comment +\/\/.\+$+
 
-autocmd BufWritePre *.go lua goimports(1000)

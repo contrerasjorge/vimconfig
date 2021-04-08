@@ -60,8 +60,8 @@ local check_back_space = function()
 _G.tab_complete = function()
   if vim.fn.pumvisible() == 1 then
     return t "<C-n>"
-  elseif vim.fn.call("vsnip#available", {1}) == 1 then
-    return t "<Plug>(vsnip-expand-or-jump)"
+ -- elseif vim.fn.call("vsnip#available", {1}) == 1 then
+ --   return t "<Plug>(vsnip-expand-or-jump)"
   elseif check_back_space() then
     return t "<Tab>"
   else
@@ -71,8 +71,8 @@ end
 _G.s_tab_complete = function()
   if vim.fn.pumvisible() == 1 then
     return t "<C-p>"
-  elseif vim.fn.call("vsnip#jumpable", {-1}) == 1 then
-    return t "<Plug>(vsnip-jump-prev)"
+--  elseif vim.fn.call("vsnip#jumpable", {-1}) == 1 then
+ --   return t "<Plug>(vsnip-jump-prev)"
   else
     return t "<S-Tab>"
   end
@@ -194,6 +194,7 @@ local filetypes = {
     javascript = "eslint",
     typescript = "eslint",
     typescriptreact = "eslint",
+    python = "flake8"
 }
 
 local linters = {
@@ -213,6 +214,31 @@ local linters = {
             security = "severity"
         },
         securities = {[2] = "error", [1] = "warning"}
+    },
+    flake8 = {
+      command= "flake8",
+      debounce= 100,
+      args= { "--format=%(row)d,%(col)d,%(code).1s,%(code)s: %(text)s", "-" },
+      offsetLine= 0,
+      offsetColumn= 0,
+      sourceName= "flake8",
+      formatLines= 1,
+      formatPattern= {
+        "(\\d+),(\\d+),([A-Z]),(.*)(\\r|\\n)*$",
+        {
+          line= 1,
+          column= 2,
+          security= 3,
+          message= 4
+        }
+      },
+      securities= {
+        ["W"]= "warning",
+        ["E"]= "error",
+        ["F"]= "error",
+        ["C"]= "error",
+        ["N"]= "error"
+      }
     }
 }
 
