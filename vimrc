@@ -68,6 +68,10 @@ call plug#end()
 
 lua require("lsp-config")
 
+" 端末
+tnoremap <Esc> <C-\><C-n>
+nnoremap <silent> <leader><leader>t :terminal<CR>
+
 " You can move anywhere!!!
 " set virtualedit=all
 
