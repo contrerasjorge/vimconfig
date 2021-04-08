@@ -31,12 +31,8 @@ Plug 'kyazdani42/nvim-tree.lua'
 
 " Nvim Lsp
 Plug 'neovim/nvim-lspconfig'
-" Autocompletion framework for built-in LSP
-"Plug 'nvim-lua/completion-nvim'
-" Extensions to built-in LSP, provides type inlay hints
 Plug 'nvim-lua/lsp_extensions.nvim'
 Plug 'scalameta/nvim-metals'
-
 Plug 'hrsh7th/nvim-compe'
 
 " Lua

@@ -243,13 +243,18 @@ local linters = {
 }
 
 local formatters = {
-    prettier = {command = "prettier", args = {"--stdin-filepath", "%filepath"}}
+    prettier = {command = "prettier", args = {"--stdin-filepath", "%filepath"}},
+    black = {
+      command = "black",
+      args= {"--quiet", "-"}
+    }
 }
 
 local formatFiletypes = {
     javascript = "prettier",
     typescript = "prettier",
-    typescriptreact = "prettier"
+    typescriptreact = "prettier",
+    python = "black"
 }
 
 nvim_lsp.diagnosticls.setup {
